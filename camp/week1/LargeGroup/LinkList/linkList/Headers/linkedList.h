@@ -124,6 +124,7 @@ Status DeleteList(LNode *p, ElemType *e){
 		*e = temp->data;
 		p->next = temp->next;
 		free(temp);
+		temp = NULL;
 		return SUCCESS;
 	}
 	return ERROR;
@@ -143,6 +144,7 @@ void TraverseList(LinkedList L, void (*visit)(ElemType e)){
 	while(L->next != NULL){
 		L = L->next;
 		visit(L->data);
+		printf(" -> ");
 	}
 }
 
