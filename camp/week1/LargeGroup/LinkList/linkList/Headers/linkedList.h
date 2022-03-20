@@ -17,7 +17,7 @@
 #ifndef LINKEDLIST_H_INCLUDED
 #define LINKEDLIST_H_INCLUDED
 #include<stdlib.h>
-#include"ElemType.h"
+#include "ElemType.h"
 
 /**************************************************************
 *	Macro Define Section
@@ -78,7 +78,7 @@ void DestroyList(LinkedList *L){
 		return;
 	}*/
 	LNode *current = *L;//用以遍历的指针，走在前
-    LNode *delP = current;//用以删除的指针，走在后
+    LNode *delP = *L;//用以删除的指针，走在后
     while(current->next != NULL){
         current = current->next;
         free(delP);
@@ -101,9 +101,8 @@ void DestroyList(LinkedList *L){
 Status InsertList(LNode *p, LNode *q){
 	if(p == NULL){
 		return ERROR;
-	}else if(q != NULL){
-		q->next = p->next;
 	}
+	q->next = p->next;
 	p->next = q;
 	return SUCCESS;
 }
@@ -143,7 +142,7 @@ void TraverseList(LinkedList L, void (*visit)(ElemType e)){
 	}*/
 	while(L->next != NULL){
 		L = L->next;
-		visit(L->data);
+		(*visit)(L->data);
 		printf(" -> ");
 	}
 }
@@ -181,14 +180,17 @@ Status ReverseList(LinkedList *L){
 		return ERROR;
 	}
 	LNode *current = (*L)->next;
+	LNode *first = (*L)->next;
 	if(current->next != NULL){//往后一个结点存在
 		if(current->next->next != NULL){//往后第二结点存在
-			ReverseList(&current->next);
-			(*L)->next = NULL;//目的是将反转后的最后一个指向NULL
+			ReverseList(&current);
 			current->next->next = current;
+			if(current == first){
+				current->next = NULL;
+			}
 			return SUCCESS;
 		}else{//往后第一个结点已是链表末尾 或 全链表只有两个结点（包括头结点）
-			(*L)->next = current->next;
+			(*L)->next = current->next;//将头结点置后
 			current->next->next = current;
 			return SUCCESS;
 		}
@@ -224,7 +226,7 @@ Status IsLoopList(LinkedList L){
 		return ERROR;
 	}*/
 	LNode *slow = L,*fast = L;
-	while(fast->next != NULL || fast->next->next != NULL){
+	while(fast->next != NULL && fast->next->next != NULL){
 		slow = slow->next;
 		fast = fast->next->next;
 		if(slow == fast){

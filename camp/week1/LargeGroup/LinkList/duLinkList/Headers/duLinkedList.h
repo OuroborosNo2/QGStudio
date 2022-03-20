@@ -97,10 +97,9 @@ void DestroyList_DuL(DuLinkedList *L){
 Status InsertBeforeList_DuL(DuLNode *p, DuLNode *q){
 	if(q == NULL){
 		return ERROR;
-	}else if(p != NULL){
-		q->next = p;
-		q->prior = p->prior;
 	}
+	q->next = p;
+	q->prior = p->prior;
 	p->prior->next = q;
 	p->prior = q;
 	return SUCCESS;
@@ -116,10 +115,9 @@ Status InsertBeforeList_DuL(DuLNode *p, DuLNode *q){
 Status InsertAfterList_DuL(DuLNode *p, DuLNode *q){
 	if(p == NULL){
 		return ERROR;
-	}else if(p != NULL){
-		q->next = p->next;
-		q->prior = p;
 	}
+	q->next = p->next;
+	q->prior = p;
 	if(p->next != NULL){
 		p->next->prior = q;
 	}
@@ -157,7 +155,7 @@ Status DeleteList_DuL(DuLNode *p, ElemType *e){
 void TraverseList_DuL(DuLinkedList L, void (*visit)(ElemType e)){
 	while(L->next != NULL){
 		L = L->next;
-		visit(L->data);
+		(*visit)(L->data);
 		printf(" -> ");
 	}
 }
