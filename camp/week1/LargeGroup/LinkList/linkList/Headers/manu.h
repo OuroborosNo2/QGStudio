@@ -33,40 +33,41 @@ void homepage(){
     printf("\t\t\t\t                                        \n");
     printf("\t\t\t\t*****************************************\n");
     printf("\n");
-    char select = getchar();
+    int select;
+    scanf("%d",&select);
     getchar();//吃去回车
     switch(select){
-        case '1':
+        case 1:
             initListPage();
             break;
-        case '2':
+        case 2:
             insertListPage();
             break;
-        case '3':
+        case 3:
             printListPage();
             break;
-        case '4':
+        case 4:
             reverseListPage();
             break;
-        case '5':
+        case 5:
             FindMidNodePage();
             break;
-        case '6':
+        case 6:
             isLoopListPage();
             break;
-        case '7':
+        case 7:
             deleteListPage();
             break;
-        case '8':
+        case 8:
             reverseEvenListPage();
             break;
-        case '9':
+        case 9:
             searchListPage();
             break;
-        case '10':
+        case 10:
             makeLoopListPage();
             break;
-        case '0':
+        case 0:
             DestroyList(&L);
             exit(0);
         default:

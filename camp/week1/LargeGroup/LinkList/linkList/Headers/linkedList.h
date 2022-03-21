@@ -180,7 +180,16 @@ Status ReverseList(LinkedList *L){
 		return ERROR;
 	}
 	LNode *current = (*L)->next;
-	LNode *first = (*L)->next;
+
+	static LNode *head;//保留原链表的头结点
+	static LNode *first;//保留原链表的第一个元素，递归回到最上层时再修改其next
+	if(head == NULL){
+		head = *L;
+	}
+	if(first == NULL){
+		first = (*L)->next;
+	}
+
 	if(current->next != NULL){//往后一个结点存在
 		if(current->next->next != NULL){//往后第二结点存在
 			ReverseList(&current);
@@ -190,7 +199,7 @@ Status ReverseList(LinkedList *L){
 			}
 			return SUCCESS;
 		}else{//往后第一个结点已是链表末尾 或 全链表只有两个结点（包括头结点）
-			(*L)->next = current->next;//将头结点置后
+			(head)->next = current->next;//将头结点置后
 			current->next->next = current;
 			return SUCCESS;
 		}
