@@ -18,7 +18,6 @@
  **************************************************************/
 #ifndef LQUEUE_H_INCLUDED
 #define LQUEUE_H_INCLUDED
-
 /**************************************************************
  *    Struct Define Section
  **************************************************************/
@@ -33,14 +32,15 @@ typedef struct Lqueue
 {
     Node *front;                   //队头
     Node *rear;                    //队尾
-    size_t length;            //队列长度
+    int length;            //队列长度
 } LQueue;
 
 typedef enum
 {
     FALSE=0, TRUE=1
-} Status;
-char type;					
+} Status;	
+char type;             //所存数据类型代码
+int dataSize;           //所存数据大小				
 char datatype[30];			
 
 /**************************************************************
@@ -49,20 +49,20 @@ char datatype[30];
 
 
 /**
- *  @name        : void InitLQueue(LQueue *Q)
+ *  @name        : void InitLQueue(LQueue **Q)
  *    @description : 初始化队列
  *    @param         Q 队列指针Q
  *  @notice      : None
  */
-void InitLQueue(LQueue *Q);
+void InitLQueue(LQueue **Q);
 
 /**
- *  @name        : void DestoryLQueue(LQueue *Q)
+ *  @name        : void DestoryLQueue(LQueue **Q)
  *    @description : 销毁队列
  *    @param         Q 队列指针Q
  *  @notice      : None
  */
-void DestoryLQueue(LQueue *Q);
+void DestroyLQueue(LQueue **Q);
 
 /**
  *  @name        : Status IsEmptyLQueue(const LQueue *Q)
@@ -83,13 +83,13 @@ Status IsEmptyLQueue(const LQueue *Q);
 Status GetHeadLQueue(LQueue *Q, void *e);
 
 /**
- *  @name        : int LengthLQueue(LQueue *Q)
+ *  @name        : Status LengthLQueue(LQueue *Q)
  *    @description : 确定队列长度
  *    @param         Q 队列指针Q
  *    @return         : 成功-TRUE; 失败-FALSE
  *  @notice      : None
  */
-int LengthLQueue(LQueue *Q);
+Status LengthLQueue(LQueue *Q);
 
 /**
  *  @name        : Status EnLQueue(LQueue *Q, void *data)
@@ -138,6 +138,8 @@ void LPrint(void *q);
 /**************************************************************
  *    End-Multi-Include-Prevent Section
  **************************************************************/
+
+
 #endif // LQUEUE_H_INCLUDED
 
 
