@@ -20,23 +20,23 @@ public class MyDataSource{
 
 
     public static void main(String[] args){
-        /*MyDataSource ds = new MyDataSource();
+        MyDataSource ds = new MyDataSource();
         Connection conn = ds.getConnection();
         List<String> params = new ArrayList<>();
         params.add("王五");
         params.add("1");
         params.add("1");
-        CRUDUtils.insert(conn,params);*/
+        CRUDUtils.insert(conn,params);
     }
 
     private LinkedList<Connection> pool = new LinkedList<>();
 
     private static int maximumPoolSize = 10;//默认为10
 
-    private static final String user = "";
-    private static final String password = "";
-    private static final String url = "";
-    private static final String driver = "";
+    private static String user = "";
+    private static String password = "";
+    private static String url = "";
+    private static String driver = "";
 
 
     //与wait()和notify()类似
@@ -49,10 +49,10 @@ public class MyDataSource{
         try(InputStream input = new FileInputStream("camp/week2/JDBC/jdbc.properties")) {
             Properties prop = new Properties();
             prop.load(input);
-            String user = prop.getProperty("user");
-            String password = prop.getProperty("password");
-            String url = prop.getProperty("url");
-            String driver = prop.getProperty("driver");
+            user = prop.getProperty("user");
+            password = prop.getProperty("password");
+            url = prop.getProperty("url");
+            driver = prop.getProperty("driver");
         }catch(Exception e){
             e.printStackTrace();
         }

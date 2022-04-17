@@ -12,6 +12,7 @@ public class CRUDUtils {
 
     public static void main(String[] args){
         Connection conn = ds.getConnection();
+        //Connection conn = getConnection();
         List<String> params = new ArrayList<>();
         params.add("小红");
         params.add("0");
