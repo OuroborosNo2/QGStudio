@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<body bgcolor="gray">
+	<meta charset="utf-8">
+	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$("button#login").click(function(){
+			var username = $('[name=username]').val();
+			var password = $('[name=password]').val();
+			$.ajax({
+				type: 'post',
+				url: '../demo/',
+				async: true,
+				data: {
+					method: "login",
+					username: username,
+					password: password
+				},
+				success: function(result){
+					alert("登陆成功");
+					window.open("homepage.html",target="_self");
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown){
+					alert(XMLHttpRequest+"    "+textStatus);
+				},
+
+				timeout: 3000
+			});
+		});
+	});
+	</script>
+<table>
+	<tr>
+		<td align="right">
+			用户名：	
+		</td>
+		<td>
+			<input type="text" size="23" name="username">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			密码：	
+		</td>
+		<td>
+			<input type="password" size="23" name="password">
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<button type="button" id="login">登陆</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			尚无账号？
+		</td>
+		<td>
+			<button type="button" id="toRegister" onclick="javascript:window.open('register.html',target='_self')">前往注册</button>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

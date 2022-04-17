@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<body bgcolor="gray">
+<meta charset="utf-8">
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            type: 'get',
+            url: '../demo/',
+            async: true,
+            data: {
+                method: "homepage",
+            },
+            //dataType: 'json',
+            success: function(data){
+                alert(data);
+                var jsonobj = JSON.parse(data);
+                $("p#username").text(jsonobj.username);
+                $("p#password").text(jsonobj.password);
+                $("p#sex").text(jsonobj.sex);
+                $("p#email").text(jsonobj.email);
+                var usernames = jsonobj.usernames;
+
+                for(var i=0;i<usernames.length;i++) {
+                    $("#onlineUsers>ul").append('<li><span>'+ usernames[i] +'</span></li>');
+                }
+                /*$("p#username").innerHTML = jsonobj.username;
+                $("#password").innerText = jsonobj.password;
+                $("#sex").innerText = jsonobj.sex;
+                $("#email").innerText = jsonobj.email;*/
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                alert(XMLHttpRequest+"失败"+textStatus);
+            },
+            timeout: 3000
+        });
+    });
+</script>
+<table id="personalInformation">
+    <tr>
+        【个人资料】
+    </tr>
+    <tr>
+        <td align="right">
+            用户名：
+        </td>
+        <td>
+            <p id="username"></p>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            密码：
+        </td>
+        <td>
+            <p id="password"></p>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            性别：
+        </td>
+        <td>
+            <p id="sex"></p>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+            邮箱：
+        </td>
+        <td>
+            <p id="email"></p>
+        </td>
+    </tr>
+</table>
+<div id="onlineUsers">
+    【在线用户】
+    <ul>
+
+    </ul>
+</div>
+</body>
+</html>

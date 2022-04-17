@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<body bgcolor="gray">
+	<meta charset="utf-8">
+	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$("button#register").click(function(){
+			var username = $('[name=username]').val();
+			var password = $('[name=password]').val();
+			var checkPassword = $('[name=checkPassword]').val();
+			var sex = $('[name=sex]')[0].checked ? "male" : "female";
+			var email = $('[name=email]').val();
+			if(password != checkPassword){
+				alert("两次输入的密码不相同！");
+				return;
+			}
+			$.ajax({
+				type: 'post',
+				url: '../demo/',
+				async: true,
+				data: {
+					method: "register",
+					username: username,
+					password: password,
+					sex: sex,
+					email: email
+				},
+				success: function(result){
+					alert(result);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown){
+					alert(errorThrown);
+				},
+
+				timeout: 3000
+			});
+		});
+	});
+	</script>
+<table>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>用户名：	
+		</td>
+		<td>
+			<input type="text" size="23" name="username"><font color="red">用户名不得少于3个字符</font>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>密码：	
+		</td>
+		<td>
+			<input type="password" size="23" name="password">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>确认密码：	
+		</td>
+		<td>
+			<input type="password" size="23" name="checkPassword">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>Email：	
+		</td>
+		<td>
+			<input type="text" size="23" name="email">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>性别：	
+		</td>
+		<td>
+			男<input type="radio" name="sex" checked="checked">
+			女<input type="radio" name="sex">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>生日：	
+		</td>
+		<td>
+			<select name="birthYear">
+				<option>2021</option><option>2020</option><option>2019</option><option>2018</option>
+			</select>
+			<select name="birthMonth">
+				<option>1</option><option>2</option><option>3</option><option>4</option>
+			</select>
+			<select name="birthDay">
+				<option>1</option><option>2</option><option>3</option><option>4</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>手机：	
+		</td>
+		<td>
+			<input type="text" size="23" name="phone">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>居住地：	
+		</td>
+		<td>
+			<select name="province">
+				<option>广东省</option>
+			</select>
+			<select name="city">
+				<option>广州市</option><option>东莞市</option><option>佛山市</option><option>梅州市</option>
+			</select>
+			<select name="district">
+				<option>花都区</option><option>天河区</option><option>越秀区</option>
+			</select>
+			<select name="town">
+				<option>新华镇</option><option>狮岭镇</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>QQ：	
+		</td>
+		<td>
+			<input type="text" name="qq" size="23" >
+			<br/>
+			<font color="blue" size="0">设置我的QQ在线状态</font>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<button type="button" id="register">注册</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			已有账号？
+		</td>
+		<td>
+			<button type="button" id="backLogin" onclick="javascript:window.open('login.html',target='_self')">返回登陆页面</button>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
