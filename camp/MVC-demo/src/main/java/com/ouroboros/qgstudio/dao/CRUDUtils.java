@@ -89,7 +89,7 @@ public class CRUDUtils {
      * @return 删除的结果
      */
     public static int update(Connection conn, String set, String range, List<Object> params) {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE FROM user SET " + set + " WHERE " + range + ";")){
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE user SET " + set + " WHERE " + range + ";")){
 
             for(int i = 0; i < params.size(); i++) {//不确定sql里有几个占位符，错误留给用户
                 ps.setObject(i + 1, params.get(i));

@@ -1,5 +1,10 @@
 package com.ouroboros.qgstudio.controller;
 
+import com.ouroboros.qgstudio.constants.Sex;
+import com.ouroboros.qgstudio.po.User;
+import com.ouroboros.qgstudio.service.UserService;
+import com.ouroboros.qgstudio.service.impl.UserServiceImpl;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,8 +16,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-// WebServlet注解表示这是一个Servlet，并映射到地址/:
-@WebServlet(urlPatterns = "/")
+
 public class BaseServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -30,17 +34,17 @@ public class BaseServlet extends HttpServlet {
         // 设置响应类型:
         resp.setContentType("text/html");
         String methodName = req.getParameter("method");
+        System.out.println(methodName);
         //通过反射自动获取并调用目标方法，整合了servlet，易于维护，不易出错
-        /*try {
+        try {
             Class<? extends BaseServlet> actionClass = this.getClass();
             Method method = actionClass.getMethod(methodName,HttpServletRequest.class,HttpServletResponse.class);
-            System.out.println("调用方法前");
             method.invoke(this,req,resp);
         }catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             resp.sendError(400,"请求了错误方法");
             e.printStackTrace();
-        }*/
-        UserServlet s = new UserServlet();
+        }
+        /*UserServlet s = new UserServlet();
         switch(methodName){
             case "login":
                 s.login(req,resp);
@@ -48,6 +52,6 @@ public class BaseServlet extends HttpServlet {
             case "register":
                 s.register(req,resp);
                 break;
-        }
+        }*/
     }
 }

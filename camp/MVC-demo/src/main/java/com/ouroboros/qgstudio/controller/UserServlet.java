@@ -6,6 +6,7 @@ import com.ouroboros.qgstudio.po.User;
 import com.ouroboros.qgstudio.service.impl.UserServiceImpl;
 import com.ouroboros.qgstudio.service.UserService;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+// WebServlet注解表示这是一个Servlet，并映射到地址/:
+@WebServlet(urlPatterns = "/")
 public class UserServlet extends BaseServlet{
 
     /**
