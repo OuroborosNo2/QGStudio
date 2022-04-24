@@ -1,5 +1,6 @@
 package com.ouroboros.qgstudio.dao.Impl;
 
+import com.ouroboros.qgstudio.constants.Permission;
 import com.ouroboros.qgstudio.constants.Sex;
 import com.ouroboros.qgstudio.dao.CRUDUtils;
 import com.ouroboros.qgstudio.dao.UserDao;
@@ -42,8 +43,8 @@ public class UserDaoImpl implements UserDao {
         if(!list.isEmpty()){
             //注册时控制好不会有同名用户，故此时不必考虑
             Sex sex = Sex.values()[(int)list.get(4)];//int转枚举
-            User user = new User((String)list.get(0), (String)list.get(1), (String)list.get(2), (String)list.get(3),sex, (int)list.get(5), (String)list.get(6), (int)list.get(7), (int)list.get(8), (String)list.get(9));
-            return user;
+            Permission permission = Permission.values()[(int)list.get(7)];
+            return new User((String)list.get(0), (String)list.get(1), (String)list.get(2), (String)list.get(3),sex, (int)list.get(5), (String)list.get(6), permission, (int)list.get(8), (String)list.get(9));
         }else{
             return null;
         }
@@ -60,7 +61,7 @@ public class UserDaoImpl implements UserDao {
         list.add(user.getSex().ordinal());
         list.add(user.getSecurity_question());
         list.add(user.getSecurity_answer());
-        list.add(user.getPermission());
+        list.add(user.getPermission().ordinal());
         list.add(user.getStorage());
         list.add(user.getDepartment());
         CRUDUtils crud = new UserCRUD();
@@ -96,7 +97,7 @@ public class UserDaoImpl implements UserDao {
         list.add(user.getSex().ordinal());
         list.add(user.getSecurity_question());
         list.add(user.getSecurity_answer());
-        list.add(user.getPermission());
+        list.add(user.getPermission().ordinal());
         list.add(user.getStorage());
         list.add(user.getDepartment());
         //range里的占位符

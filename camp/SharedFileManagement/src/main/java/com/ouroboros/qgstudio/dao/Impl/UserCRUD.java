@@ -14,13 +14,9 @@ public class UserCRUD implements CRUDUtils {
     public int insert(Connection conn, List<Object> params) {
         try(PreparedStatement ps = conn.prepareStatement("INSERT INTO user (username,password,nickname,email,sex,security_question,security_answer,permission,storage,department) VALUES(?,?,?,?,?,?,?,?,?,?);")){
             //写在括号里能自动释放，自己只需释放conn
-            ps.setObject(1, params.get(0));
-            ps.setObject(2, params.get(1));
-            ps.setObject(3, params.get(2));
-            ps.setObject(4, params.get(3));
-            ps.setObject(5, params.get(4));
-            ps.setObject(6, params.get(5));
-            ps.setObject(7, params.get(6));
+            for(int i = 0; i < 10; i++) {//不确定sql里有几个占位符，错误留给用户
+                ps.setObject(i + 1, params.get(i));
+            }
             int result = ps.executeUpdate();
             return result;
         }catch(SQLException e) {
@@ -87,8 +83,6 @@ public class UserCRUD implements CRUDUtils {
                 }
                 return str;
             }
-
-
         }catch(SQLException e) {
             e.printStackTrace();
             return null;

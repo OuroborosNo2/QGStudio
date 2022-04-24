@@ -1,6 +1,6 @@
 package com.ouroboros.qgstudio.po;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class File {
     private String filename;

@@ -1,8 +1,13 @@
 package com.ouroboros.qgstudio.po;
 
+import com.ouroboros.qgstudio.constants.Permission;
 import com.ouroboros.qgstudio.constants.Sex;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Objects;
+import java.util.Properties;
 
 public class User {
     private String username;
@@ -12,11 +17,29 @@ public class User {
     private Sex sex;
     private int security_question;
     private String security_answer;
-    private int permission;
+    private Permission permission;
     private int storage;
     private String department;
 
-    public User(String username, String password, String nickname, String email, Sex sex, int security_question, String security_answer, int permission, int storage, String department) {
+    //三种权限组的默认存储空间
+    public static int STORAGE_VISITOR;
+    public static int STORAGE_USER;
+    public static int STORAGE_ADMINISTRATOR;
+
+    static{
+        try(InputStream input = new FileInputStream("../webapps/SFM/WEB-INF/classes/com/ouroboros/qgstudio/config/default_storage.properties")) {
+            Properties prop = new Properties();
+            prop.load(input);
+            STORAGE_VISITOR = Integer.parseInt(prop.getProperty("visitor"));
+            STORAGE_USER = Integer.parseInt(prop.getProperty("user"));
+            STORAGE_ADMINISTRATOR = Integer.parseInt(prop.getProperty("administrator"));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public User(String username, String password, String nickname, String email, Sex sex, int security_question, String security_answer, Permission permission, int storage, String department){
         this.username = username;
         this.password = password;
         this.nickname = nickname;
@@ -27,6 +50,20 @@ public class User {
         this.permission = permission;
         this.storage = storage;
         this.department = department;
+    }
+
+    //仅用于注册时
+    public User(String username, String password, String email, Sex sex){
+        this.username = username;
+        this.password = password;
+        this.nickname = username;
+        this.email = email;
+        this.sex = sex;
+        this.security_question = 0;
+        this.security_answer = null;
+        this.permission = Permission.user;
+        this.storage = STORAGE_USER;
+        this.department = null;
     }
 
     public String getUsername() {
@@ -85,11 +122,11 @@ public class User {
         this.security_answer = security_answer;
     }
 
-    public int getPermission() {
+    public Permission getPermission() {
         return permission;
     }
 
-    public void setPermission(int permission) {
+    public void setPermission(Permission permission) {
         this.permission = permission;
     }
 

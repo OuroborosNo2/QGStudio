@@ -35,7 +35,7 @@ public class MyDataSource{
 
     static {
         //读取配置文件
-        try(InputStream input = new FileInputStream("../webapps/demo/WEB-INF/classes/com/ouroboros/qgstudio/config/jdbc.properties")) {
+        try(InputStream input = new FileInputStream("../webapps/SFM/WEB-INF/classes/com/ouroboros/qgstudio/config/jdbc.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             user = prop.getProperty("user");

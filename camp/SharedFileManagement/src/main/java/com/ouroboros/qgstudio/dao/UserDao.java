@@ -5,9 +5,9 @@ import com.ouroboros.qgstudio.po.User;
 public interface UserDao{
     MyDataSource ds = new MyDataSource();
     User getUserByName(String username);
-    User getUserByEmail(String eamil);
+    User getUserByEmail(String email);
     boolean insertUser(User user);
-    boolean deleteUser(String user);
+    boolean deleteUser(String username);
     boolean updateUser(User user);
 
 }
