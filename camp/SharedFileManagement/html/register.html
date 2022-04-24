@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<body bgcolor="gray">
+	<meta charset="utf-8">
+	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$("button#register").click(function(){
+			var username = $('[name=username]').val();
+			var password = $('[name=password]').val();
+			var checkPassword = $('[name=checkPassword]').val();
+			var sex = $('[name=sex]')[0].checked ? "male" : "female";
+			var email = $('[name=email]').val();
+			if(password !== checkPassword){
+				alert("两次输入的密码不相同！");
+				return;
+			}
+			$.ajax({
+				type: 'post',
+				url: '../SFM/',
+				async: true,
+				data: {
+					method: "register",
+					username: username,
+					password: password,
+					email: email,
+					sex: sex
+				},
+				success: function(result){
+					alert("注册成功");
+					window.open('login.html',target='_self')
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown){
+					alert(XMLHttpRequest.status);
+				},
+
+				timeout: 3000
+			});
+		});
+	});
+	</script>
+<table>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>用户名：	
+		</td>
+		<td>
+			<input type="text" size="23" name="username"><font color="red">用户名不得少于3个字符</font>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>密码：	
+		</td>
+		<td>
+			<input type="password" size="23" name="password">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>确认密码：	
+		</td>
+		<td>
+			<input type="password" size="23" name="checkPassword">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>Email：	
+		</td>
+		<td>
+			<input type="text" size="23" name="email">
+		</td>
+	</tr>
+	<tr>
+		<td align="right">
+			<font color="red">*</font>性别：	
+		</td>
+		<td>
+			男<input type="radio" name="sex" checked="checked">
+			女<input type="radio" name="sex">
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<button type="button" id="register">注册</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			已有账号？
+		</td>
+		<td>
+			<button type="button" id="backLogin" onclick="javascript:window.open('login.html',target='_self')">返回登陆页面</button>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
