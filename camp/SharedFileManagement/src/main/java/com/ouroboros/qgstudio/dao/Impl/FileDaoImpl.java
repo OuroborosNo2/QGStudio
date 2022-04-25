@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class FileDaoImpl implements FileDao {
         List<Object> rs = crud.query(this.conn,"directory = ? AND filename = ?",list);
         ds.releaseConnection(this.conn);
         if(!rs.isEmpty()){
-            return new File((String)list.get(0), (String)list.get(1), (int)list.get(2), (Date) list.get(3), (String)list.get(4), (int)list.get(5));
+            return new File((String)list.get(0), (String)list.get(1), (int)list.get(2), (Timestamp) list.get(3), (String)list.get(4), (int)list.get(5));
         }else{
             return null;
         }
@@ -90,18 +91,22 @@ public class FileDaoImpl implements FileDao {
     }
 
     @Override
-    public void saveFile(InputStream in, FileOutputStream out) {
+    public int saveFile(InputStream in, FileOutputStream out) {
+        int size = 0;
         try {
             // 通过文件输出流将上传的文件保存到磁盘
             int len = 0;
             byte[] b = new byte[1024];
             while((len = in.read(b)) != -1) {
                 out.write(b, 0, len);
+                size += len;
             }
+            out.flush();
             out.close();
             in.close();
         }catch(IOException e){
             e.printStackTrace();
         }
+        return size;
     }
 }

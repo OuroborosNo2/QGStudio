@@ -6,9 +6,12 @@ import com.ouroboros.qgstudio.dao.CRUDUtils;
 import com.ouroboros.qgstudio.dao.UserDao;
 import com.ouroboros.qgstudio.po.User;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class UserDaoImpl implements UserDao {
 
@@ -41,7 +44,6 @@ public class UserDaoImpl implements UserDao {
 
     private User getUser(List<Object> list) {
         if(!list.isEmpty()){
-            //注册时控制好不会有同名用户，故此时不必考虑
             Sex sex = Sex.values()[(int)list.get(4)];//int转枚举
             Permission permission = Permission.values()[(int)list.get(7)];
             return new User((String)list.get(0), (String)list.get(1), (String)list.get(2), (String)list.get(3),sex, (int)list.get(5), (String)list.get(6), permission, (int)list.get(8), (String)list.get(9));
@@ -107,5 +109,25 @@ public class UserDaoImpl implements UserDao {
 
         ds.releaseConnection(this.conn);
         return result != -1;//result==-1 ? false : true的简化
+    }
+
+    @Override
+    public List<String> readSecurityQuestions() {
+        List<String> list = new ArrayList<>();
+        try(InputStream input = new FileInputStream("../webapps/SFM/WEB-INF/classes/com/ouroboros/qgstudio/config/security_questions.properties")) {
+            Properties prop = new Properties();
+            prop.load(input);
+            for(int i=1;;i++){
+                String str = prop.getProperty(i + "");
+                if(str != null){
+                    list.add(str);
+                }else{
+                    break;
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return list;
     }
 }

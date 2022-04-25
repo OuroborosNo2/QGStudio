@@ -5,6 +5,7 @@
 * 导出建表文件
 * user添加phone
 * 上传文件时，实现用户自己的多层目录
+* 数据库的事务隔离
 
 ## 存在问题
 
@@ -19,7 +20,15 @@
   * 解决方法：上传完一次后重置\<input>,然而出于安全考虑，浏览器只允许用户点击\<input type="file">来选择本地文件，
   用JavaScript对\<input type="file">的value赋值是没有任何效果的。
   所以先删再加回去。
-
+* 问题：ajax请求赋值json不成功
+  * 原因：实际上是成功的，但要注意异步通信，执行ajax之后的代码时，可能通信未完成，故变量仍未被赋值。
+* 问题：ajax请求中，无论结果如何都进入error的函数。
+  * 原因：
+    1. 写了dataType:"json"，但后端传回的不是json或格式不规范
+    2. 写了dataType:"json"，但后端的响应类型设置了其他如text/plain
+  * 解决方法：
+    1. 删掉dataType
+    2. 检查后端响应类型application/json及响应内容
 ## 依赖
 * fastjson
 * jdbc-mysql

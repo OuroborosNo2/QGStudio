@@ -18,5 +18,5 @@ public interface FileDao {
     boolean insertFile(File file);
     boolean deleteFile(String directory, String filename);
     boolean updateFile(File file);
-    void saveFile(InputStream in, FileOutputStream out);
+    int saveFile(InputStream in, FileOutputStream out);
 }

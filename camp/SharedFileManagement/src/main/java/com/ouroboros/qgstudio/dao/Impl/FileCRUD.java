@@ -14,7 +14,7 @@ public class FileCRUD implements CRUDUtils {
     public int insert(Connection conn, List<Object> params) {
         try(PreparedStatement ps = conn.prepareStatement("INSERT INTO file (filename,directory,times,deadline,get_code,size) VALUES(?,?,?,?,?,?,?);")){
             //写在括号里能自动释放，自己只需释放conn
-            for(int i = 0; i < 7; i++) {//不确定sql里有几个占位符，错误留给用户
+            for(int i = 0; i < 7; i++) {
                 ps.setObject(i + 1, params.get(i));
             }
             int result = ps.executeUpdate();

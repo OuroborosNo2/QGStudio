@@ -1,16 +1,16 @@
 package com.ouroboros.qgstudio.po;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class File {
     private String filename;
     private String directory;
-    private int times;
-    private Date deadline;
-    private String get_code;
-    private int size;
+    private int times;//不限：-1
+    private Timestamp deadline;//不限：9999-12-31 00:00:00
+    private String get_code;//不限：null
+    private int size;//int 最大为2g左右，够用了，不需要long，但要限制单个文件最大值
 
-    public File(String filename, String directory, int times, Date deadline, String get_code, int size) {
+    public File(String filename, String directory, int times, Timestamp deadline, String get_code, int size) {
         this.filename = filename;
         this.directory = directory;
         this.times = times;
@@ -31,7 +31,7 @@ public class File {
         return times;
     }
 
-    public Date getDeadline() {
+    public Timestamp getDeadline() {
         return deadline;
     }
 
@@ -55,7 +55,7 @@ public class File {
         this.times = times;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
     }
 
