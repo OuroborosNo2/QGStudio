@@ -14,7 +14,7 @@ public class UserCRUD implements CRUDUtils {
     public int insert(Connection conn, List<Object> params) {
         try(PreparedStatement ps = conn.prepareStatement("INSERT INTO user (username,password,nickname,email,sex,security_question,security_answer,permission,storage,department) VALUES(?,?,?,?,?,?,?,?,?,?);")){
             //写在括号里能自动释放，自己只需释放conn
-            for(int i = 0; i < 10; i++) {//不确定sql里有几个占位符，错误留给用户
+            for(int i = 0; i < params.size(); i++) {//不确定sql里有几个占位符，错误留给用户
                 ps.setObject(i + 1, params.get(i));
             }
             int result = ps.executeUpdate();

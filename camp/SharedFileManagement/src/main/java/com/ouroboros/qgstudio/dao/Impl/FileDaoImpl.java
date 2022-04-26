@@ -30,7 +30,7 @@ public class FileDaoImpl implements FileDao {
         List<Object> rs = crud.query(this.conn,"directory = ? AND filename = ?",list);
         ds.releaseConnection(this.conn);
         if(!rs.isEmpty()){
-            return new File((String)list.get(0), (String)list.get(1), (int)list.get(2), (Timestamp) list.get(3), (String)list.get(4), (int)list.get(5));
+            return new File((String)rs.get(0), (String)rs.get(1), (int)rs.get(2), (Timestamp) rs.get(3), (String)rs.get(4), (int)rs.get(5));
         }else{
             return null;
         }

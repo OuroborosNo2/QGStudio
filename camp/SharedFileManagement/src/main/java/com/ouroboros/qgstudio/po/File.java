@@ -6,7 +6,7 @@ public class File {
     private String filename;
     private String directory;
     private int times;//不限：-1
-    private Timestamp deadline;//不限：9999-12-31 00:00:00
+    private Timestamp deadline;//不限：null
     private String get_code;//不限：null
     private int size;//int 最大为2g左右，够用了，不需要long，但要限制单个文件最大值
 

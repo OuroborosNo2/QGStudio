@@ -12,9 +12,9 @@ import java.util.List;
 public class FileCRUD implements CRUDUtils {
     @Override
     public int insert(Connection conn, List<Object> params) {
-        try(PreparedStatement ps = conn.prepareStatement("INSERT INTO file (filename,directory,times,deadline,get_code,size) VALUES(?,?,?,?,?,?,?);")){
+        try(PreparedStatement ps = conn.prepareStatement("INSERT INTO file (filename,directory,times,deadline,get_code,size) VALUES(?,?,?,?,?,?);")){
             //写在括号里能自动释放，自己只需释放conn
-            for(int i = 0; i < 7; i++) {
+            for(int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
             int result = ps.executeUpdate();
@@ -73,8 +73,8 @@ public class FileCRUD implements CRUDUtils {
                     str.add(rs.getString("filename"));
                     str.add(rs.getString("directory"));
                     str.add(rs.getInt("times"));
-                    str.add(rs.getDate("deadline"));
-                    str.add(rs.getInt("get_Code"));
+                    str.add(rs.getTimestamp("deadline"));
+                    str.add(rs.getString("get_Code"));
                     str.add(rs.getInt("size"));
                 }
                 return str;
