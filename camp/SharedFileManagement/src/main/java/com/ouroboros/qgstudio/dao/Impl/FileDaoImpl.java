@@ -55,12 +55,15 @@ public class FileDaoImpl implements FileDao {
     }
 
     @Override
-    public boolean deleteFile(String directory, String filename) {
+    public boolean deleteFile(File file) {
+        if(file == null){
+            return false;
+        }
         this.conn = ds.getConnection();
 
         List<Object> list = new ArrayList<>();
-        list.add(directory);
-        list.add(filename);
+        list.add(file.getDirectory());
+        list.add(file.getFilename());
         CRUDUtils crud = new FileCRUD();
         int result = crud.delete(this.conn,"directory = ? AND filename = ?",list);
 
@@ -109,4 +112,16 @@ public class FileDaoImpl implements FileDao {
         }
         return size;
     }
+
+    @Override
+    public boolean deleteFileOnDisk(File file) {
+        String path = "../webapps/files/" + file.getDirectory() + "/" + file.getFilename();
+        java.io.File f = new java.io.File(path);
+        if(f.exists()){//存在文件，执行删除
+            return f.delete();
+        }else{//磁盘上不存在此文件
+            return false;
+        }
+    }
+
 }

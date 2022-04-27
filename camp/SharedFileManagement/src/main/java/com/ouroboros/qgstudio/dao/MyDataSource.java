@@ -42,6 +42,7 @@ public class MyDataSource{
             password = prop.getProperty("password");
             url = prop.getProperty("url");
             driver = prop.getProperty("driver");
+            maximumPoolSize = Integer.parseInt(prop.getProperty("maximumPoolSize"));
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -99,6 +100,17 @@ public class MyDataSource{
                 condition.signal();
             } finally {
                 lock.unlock();
+            }
+        }
+    }
+
+    public void destroyDataSource(){
+        //连接在用的话是上了锁的，访问不了不用怕出问题，故这里直接释放就完了
+        for (int i = 0; i < maximumPoolSize; i++) {
+            try {
+                pool.removeFirst().close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }

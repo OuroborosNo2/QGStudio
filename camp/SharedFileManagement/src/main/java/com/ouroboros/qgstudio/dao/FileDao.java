@@ -16,7 +16,19 @@ public interface FileDao {
      * */
     File getFile(String directory, String filename);
     boolean insertFile(File file);
-    boolean deleteFile(String directory, String filename);
+    boolean deleteFile(File file);
     boolean updateFile(File file);
+
+    //以下是io操作
+
+    /** 从一处读文件并写到另一处
+     * @param in 读数据
+     * @param out 写数据
+     * @return 写入的文件大小
+     * */
     int saveFile(InputStream in, FileOutputStream out);
+    /** 在磁盘上删除file对应的文件
+     * @param file 是po的File 不是io的
+     * */
+    boolean deleteFileOnDisk(File file);
 }
