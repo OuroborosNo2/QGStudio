@@ -135,7 +135,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean deleteFolder(String path) {
-        return dao.deleteFileOnDisk(path);
+        return dao.deleteFileOnDisk("../webapps/files/" + path);
     }
 
     @Override
@@ -143,5 +143,17 @@ public class FileServiceImpl implements FileService {
         return dao.newFolder(path);
     }
 
+    @Override
+    public boolean renameFile(com.ouroboros.qgstudio.po.File file, String newname) {
+        String path = "../webapps/files/" + file.getDirectory() + "/" + file.getFilename();
+        file.setFilename(newname);
+        synchronized(file) {
+            return dao.renameFileOnDisk(path,newname) && dao.updateFile(file);
+        }
+    }
 
+    @Override
+    public boolean renameFolder(String path, String newname) {
+        return dao.renameChildrenFileDirectory(path,path,newname) && dao.renameFileOnDisk("../webapps/files/" + path,newname);
+    }
 }

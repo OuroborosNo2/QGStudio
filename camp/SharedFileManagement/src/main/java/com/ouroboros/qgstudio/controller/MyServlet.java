@@ -166,7 +166,7 @@ public class MyServlet extends BaseServlet{
                 service.deleteFile(file);
             }
         }else{
-            service.deleteFolder("../webapps/files/" + path + "/" + filename);
+            service.deleteFolder(path + "/" + filename);
         }
 
     }
@@ -179,6 +179,37 @@ public class MyServlet extends BaseServlet{
             }catch(IOException e){
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void renameFile(HttpServletRequest req, HttpServletResponse resp){
+        try {
+            String path = req.getParameter("path");
+            String filename = req.getParameter("filename");
+            String newname = req.getParameter("newname");
+            String fileType = req.getParameter("fileType");
+            FileService service = new FileServiceImpl();
+
+            if(fileType.equals("file")) {
+                com.ouroboros.qgstudio.po.File file = service.getFile(path, filename);
+                if(file == null) {
+                    try {
+                        resp.sendError(404, "文件不存在");
+                    }catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    if(!service.renameFile(file, newname)){
+                        resp.sendError(500,"重命名失败");
+                    }
+                }
+            }else {
+                if(!service.renameFolder(path + "/" + filename, newname)){
+                    resp.sendError(500,"重命名失败");
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 }

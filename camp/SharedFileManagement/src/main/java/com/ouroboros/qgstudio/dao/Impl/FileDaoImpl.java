@@ -122,6 +122,45 @@ public class FileDaoImpl implements FileDao {
     }
 
     @Override
+    public boolean renameChildrenFileDirectory(String path, String oldpath, String newname) {
+        try {
+            java.io.File f = new java.io.File("../webapps/files/" + path);
+            java.io.File[] listFiles = f.listFiles();
+            if(listFiles != null) {//目录下有东西,要把他们的父路径也改了
+                //将文件和文件夹分离
+                for(java.io.File file : listFiles) {
+                    if(file.isDirectory()) {
+                        //目录
+                        this.renameChildrenFileDirectory(path + "/" + file.getName(), oldpath, newname);
+                    }else {
+                        //文件
+                        com.ouroboros.qgstudio.po.File toUpdate = this.getFile(path, file.getName());
+                        String[] str = path.split(oldpath);
+                        toUpdate.setDirectory(oldpath.substring(0, oldpath.lastIndexOf("/") + 1) + newname + (str.length==0 ? "" : str[1]));
+                        this.updateFile(toUpdate);
+                    }
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean renameFileOnDisk(String path, String newname) {
+
+        java.io.File f1 = new java.io.File(path);
+        java.io.File f2 = new java.io.File(path.substring(0,path.lastIndexOf("/")+1)+newname);
+        if(f1.exists()){//存在文件，执行重命名
+            return f1.renameTo(f2);
+        }else{//磁盘上不存在此文件
+            return false;
+        }
+    }
+
+    @Override
     public boolean newFolder(String path) {
         java.io.File f = new java.io.File(path);
         if(f.exists()){

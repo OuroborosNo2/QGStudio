@@ -30,5 +30,9 @@ public interface FileDao {
 
     boolean deleteFileOnDisk(String path);
 
+    boolean renameFileOnDisk(String path, String newname);
+
+    boolean renameChildrenFileDirectory(String path, String oldname, String newname);
+
     boolean newFolder(String path);
 }

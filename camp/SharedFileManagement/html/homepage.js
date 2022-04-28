@@ -98,7 +98,7 @@ function deleteFile(){
     //判断是文件夹还是文件
     let filename;
     let fileType;
-    if(window.file_select.substring(0,3) === "file"){
+    if(window.file_select.substring(0,4) === "file"){
         filename = window.file_select.substring(5);//file_value ,从_后开始截取value
         fileType = "file";
     }else{
@@ -124,6 +124,63 @@ function deleteFile(){
         },
         timeout: 3000
     });
+}
+function renameFile(){
+    if(window.file_select === undefined){//未选择文件
+        alert("请选择文件");
+        return;
+    }
+
+    const selectingFile = $(document.getElementById(window.file_select));
+
+    selectingFile.replaceWith("<div id='div_renamingFile'>" +
+        "<input type='text' id='div_renamingFile_name' size='20'>" +
+        "<button type='button' id='div_renamingFile_confirm'>确定</button>" +
+        "<button type='button' id='div_renamingFile_cancel'>取消</button>" +
+        "</div>");
+
+    $("#div_renamingFile_name").val(selectingFile.text());
+    $("#div_renamingFile_name").focus();
+
+    //如果点击的不是确定，那就相当于取消
+    document.addEventListener("mousedown", func, false);
+    function func(e){
+        if(e.target.id === "div_renamingFile_confirm"){
+            //判断是文件夹还是文件
+            let filename;
+            const newname = $("#div_renamingFile_name").val();
+            let fileType;
+            if(window.file_select.substring(0,4) === "file"){
+                filename = window.file_select.substring(5);//file_value ,从_后开始截取value
+                fileType = "file";
+            }else{
+                filename = window.file_select.substring(7);//folder_value ,从_后开始截取value
+                fileType = "folder";
+            }
+            $.ajax({
+                url: '../SFM/?method=renameFile',
+                type: 'get',
+                async: true,
+                data:{
+                    path:window.path,
+                    filename:filename,
+                    newname:newname,
+                    fileType:fileType
+                },
+                success: function () {
+                    showFileList();//异步
+                },
+                error: function (XMLHttpRequest) {
+                    alertError(XMLHttpRequest);
+                    showFileList();
+                },
+                timeout: 3000
+            });
+        }else if(e.target.id === "div_renamingFile_name"){
+            return;//无反应
+        }
+        document.removeEventListener("mousedown",func);
+    }
 }
 function newFolder() {
     $("<div id='div_creatingFolder'>" +
@@ -176,6 +233,7 @@ function showManu(){
         ' <button type="button" id="sort">按xxx排序</button>' +
         ' <button type="button" id="share">分享</button>' +
         ' <button type="button" id="delete" onClick="deleteFile()">删除</button>' +
+        '<button type="button" id="rename" onClick="renameFile()">重命名</button>' +
         ' <button type="button" id="download">下载</button>' +
         ' <a type="button" class="upload">' +
             ' <input type="file" id="file" multiple="multiple" onChange="uploadFile()"/>' +
@@ -243,13 +301,15 @@ function showFileList(){
         success: function (result) {
             //列出文件夹
             result.folders.forEach(function(value,index){
-                let folder = $("<div class='list_folder'></div>");
-                folder.append("<i class='icon_folder'></i>");
-                folder.append("<a></a>");
-                folder.children("a").attr("title",value);
-                folder.children("a").attr("id","folder_"+value);//防止id重复
-                folder.children("a").text(value);
-                div_list.append(folder);
+                if(value !== null) {
+                    let folder = $("<div class='list_folder'></div>");
+                    folder.append("<i class='icon_folder'></i>");
+                    folder.append("<a></a>");
+                    folder.children("a").attr("title", value);
+                    folder.children("a").attr("id", "folder_" + value);//防止id重复
+                    folder.children("a").text(value);
+                    div_list.append(folder);
+                }
             });
             //绑定双击文件夹事件
             div_list.on('dblclick','div.list_folder a',function (){
@@ -261,13 +321,15 @@ function showFileList(){
             });
             //列出文件
             result.files.forEach(function(value,index){
-                let file = $("<div class='list_file'></div>");
-                file.append("<i class='icon_file'></i>");
-                file.append("<a></a>");
-                file.children("a").attr("title",value.filename);
-                file.children("a").attr("id","file_"+value.filename);
-                file.children("a").text(value.filename);
-                div_list.append(file);
+                if(value !== null){
+                    let file = $("<div class='list_file'></div>");
+                    file.append("<i class='icon_file'></i>");
+                    file.append("<a></a>");
+                    file.children("a").attr("title",value.filename);
+                    file.children("a").attr("id","file_"+value.filename);
+                    file.children("a").text(value.filename);
+                    div_list.append(file);
+                }
             });
             //绑定点击文件/文件夹事件
             div_list.on('click','div.list_file a , div.list_folder',function (){

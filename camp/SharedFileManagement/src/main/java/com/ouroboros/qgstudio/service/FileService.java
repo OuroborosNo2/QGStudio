@@ -15,4 +15,6 @@ public interface FileService {
     boolean deleteFile(File file);
     boolean deleteFolder(String path);
     boolean newFolder(String path);
+    boolean renameFile(File file, String newname);
+    boolean renameFolder(String path, String newname);
 }
