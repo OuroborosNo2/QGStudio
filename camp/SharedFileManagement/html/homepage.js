@@ -180,6 +180,7 @@ function renameFile(){
             return;//无反应
         }
         document.removeEventListener("mousedown",func);
+        showFileList();
     }
 }
 function newFolder() {
@@ -277,9 +278,22 @@ function showDirectory(){
         $("<span></span>")
             .attr("id","directory_"+value)
             .text(value+" > ")
+            .attr("title",value)
             .appendTo(div_directory);
     });
-
+    $("#div_directory span").click(function(){
+        let iterator = $(this);
+        window.path = iterator.attr("title");
+        while(1){
+            iterator = iterator.prev();
+            if(iterator.attr("id") === "div_directory_back"){
+                break;
+            }
+            window.path = iterator.attr("title") + "/" + window.path;
+        }
+        showDirectory();
+        showFileList();
+    });
 }
 function showFileList(){
     let div_list = $('<div id="div_list"></div>');
@@ -332,7 +346,7 @@ function showFileList(){
                 }
             });
             //绑定点击文件/文件夹事件
-            div_list.on('click','div.list_file a , div.list_folder',function (){
+            div_list.on('click','div.list_file a , div.list_folder a',function (){
                 //获取文件选择
                 window.file_select = event.srcElement.getAttribute("id");
                 //重置文件背景色
