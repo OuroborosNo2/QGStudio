@@ -127,15 +127,13 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean deleteFile(com.ouroboros.qgstudio.po.File file) {
         String path = "../webapps/files/" + file.getDirectory() + "/" + file.getFilename();
-        //这两个操作必须是”原子“的，必须同时成功，且调用顺序不能变。要注意并发造成的问题
-        synchronized(file) {//上file锁实际上没有用，并发处理是不是这个项目最难的地方？
-            return dao.deleteFileOnDisk(path) && dao.deleteFile(file);
-        }
+        //TODO 这两个操作必须是”原子“的，必须同时成功，且调用顺序不能变。要注意并发造成的问题
+        return dao.deleteFileOnDisk(path)!=-1  && dao.deleteFile(file);
     }
 
     @Override
-    public boolean deleteFolder(String path) {
-        return dao.deleteFileOnDisk("../webapps/files/" + path);
+    public int deleteFolder(String path) {
+        return dao.deleteChildrenFile("../webapps/files/" + path);
     }
 
     @Override

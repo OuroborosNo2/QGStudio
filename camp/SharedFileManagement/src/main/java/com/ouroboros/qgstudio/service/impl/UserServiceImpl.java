@@ -52,6 +52,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updateUser(User user) {
+        return dao.updateUser(user);
+    }
+
+    @Override
     public JSONObject getUserJSON(User user) {
         JSONObject jsonobj = new JSONObject();
         jsonobj.put("username", user.getUsername());

@@ -2,10 +2,12 @@
 //全局变量 很容易弄混，调用的时候最好加window.
 var user;
 var path;
+var defaultStorage;
 //选择一律获取id
 var navigation_select;
 var file_select;
 $(document).ready(function () {
+    getDefaultStorage();
     getUser();
     $("#navigation button").click(function () {
         window.navigation_select = this.getAttribute("id");//获取导航选择
@@ -25,7 +27,22 @@ function getUser() {
 
             $("#nickname").text(window.user.nickname);
             window.navigation_select = "personalSpace";
-            personalSpace()
+            personalSpace();
+        },
+        error: function (XMLHttpRequest) {
+            alertError(XMLHttpRequest);
+        },
+        timeout: 3000
+    });
+}
+function getDefaultStorage(){
+    $.ajax({
+        url: '../SFM?method=getDefaultStorage',
+        type: 'get',
+        async: false,
+        dataType: "json",
+        success: function (result) {
+            window.defaultStorage = result;
         },
         error: function (XMLHttpRequest) {
             alertError(XMLHttpRequest);
@@ -50,15 +67,20 @@ function logout(){
 }
 
 function uploadFile() {
-
-    const maxSize = 1024 * 1024 * 500;
+    const maxSize = window.defaultStorage.SINGLE_FILE_MAX_SIZE;
+    let totalSize = 0;
     const formData = new FormData();
     const f = document.getElementById("file");
     formData.append("path",window.path);
     for (let i = 0; i < f.files.length; i++) {
         if (f.files[i].size > maxSize) {
-            alert("单个文件最大不能超过500m(524288000)！\n" + f.files[i].name + "大小为" + f.files[i].size);
-            continue;
+            alert("单个文件最大不能超过"+maxSize/1024/1024+"MB("+maxSize+")！\n" + f.files[i].name + "大小为" + f.files[i].size);
+            return;
+        }
+        totalSize += f.files[i].size;
+        if(totalSize > window.user.storage){
+            alert("剩余空间不足");
+            break;
         }
         let strname = "file" + i;
         //将参数以键值对的形式添加到formDate构造函数
@@ -74,7 +96,7 @@ function uploadFile() {
         processData: false,
         success: function (data) {
             alert("上传成功");
-            showFileList(window.path);
+            getUser();
         },
         error: function (XMLHttpRequest) {
             alertError(XMLHttpRequest);
@@ -117,7 +139,7 @@ function deleteFile(){
         success: function (result) {
             alert("删除成功");
             window.file_select = undefined;
-            showFileList(window.path);
+            getUser();
         },
         error: function (XMLHttpRequest) {
             alertError(XMLHttpRequest);
@@ -223,9 +245,12 @@ function showType(){
         ' <button type="button" id="picture">图片</button>' +
         ' <button type="button" id="document">文档</button>' +
         ' <button type="button" id="video">视频</button>' +
-        ' <button type="button" id="audio">音频</button> ' +
+        ' <button type="button" id="audio">音频</button>' +
+        '<p id="remainingStorage"></p> ' +
         '</div>')
         .appendTo($("#content"));
+    $("#remainingStorage").text("剩余空间："+ (window.user.storage/1024/1024).toFixed(2) + "MB/"
+        + ((window.defaultStorage.STORAGE_USER)/1024/1024).toFixed(2) + "MB");
 }
 function showManu(){
     $('<div id="right" class="content"></div>').appendTo($("#content"));

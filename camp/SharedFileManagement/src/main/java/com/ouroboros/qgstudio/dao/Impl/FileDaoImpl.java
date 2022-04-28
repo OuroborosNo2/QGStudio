@@ -112,13 +112,42 @@ public class FileDaoImpl implements FileDao {
     }
 
     @Override
-    public boolean deleteFileOnDisk(String path) {
+    public int deleteFileOnDisk(String path) {
         java.io.File f = new java.io.File(path);
+        int size = (int)f.length();
         if(f.exists()){//存在文件，执行删除
-            return f.delete();
+            return f.delete() ? size : -1;
         }else{//磁盘上不存在此文件
-            return false;
+            return -1;
         }
+    }
+
+    @Override
+    public int deleteChildrenFile(String path) {
+        int totalSize = 0;
+        try {
+            java.io.File f = new java.io.File(path);
+            java.io.File[] listFiles = f.listFiles();
+            if(listFiles != null) {//目录下有东西,把目录下所有文件也删了
+                //将文件和文件夹分离
+                for(java.io.File file : listFiles) {
+                    if(file.isDirectory()) {
+                        //目录
+                        totalSize += this.deleteChildrenFile(path + "/" + file.getName());
+                    }else {
+                        //文件
+                        String[] str = path.split("../webapps/files/");
+                        com.ouroboros.qgstudio.po.File toDelete = this.getFile(str.length==0 ? "" : str[1], file.getName());
+                        this.deleteFile(toDelete);
+                        totalSize += this.deleteFileOnDisk(path + "/" + file.getName());
+                    }
+                }
+            }
+            f.delete();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return totalSize;
     }
 
     @Override

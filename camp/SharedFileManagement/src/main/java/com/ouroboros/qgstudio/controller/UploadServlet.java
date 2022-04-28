@@ -35,7 +35,7 @@ public class UploadServlet extends HttpServlet {
         try {
             fileUpload.setSizeMax(user.getStorage());//多文件总大小不能超过用户剩余的存储空间
         }catch(Exception e){
-            resp.sendError(403,"空间不足");
+            resp.sendError(403,"用户空间不足");
             e.printStackTrace();
         }
         //3. 使用解析器来解析request对象：

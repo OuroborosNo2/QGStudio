@@ -154,7 +154,7 @@ public class MyServlet extends BaseServlet{
         String fileType = req.getParameter("fileType");
         FileService service = new FileServiceImpl();
 
-        if(fileType.equals("file")){
+        if(fileType.equals("file")){//文件
             com.ouroboros.qgstudio.po.File file = service.getFile(path,filename);
             if(file == null){
                 try {
@@ -163,10 +163,25 @@ public class MyServlet extends BaseServlet{
                     e.printStackTrace();
                 }
             }else{
-                service.deleteFile(file);
+                if(service.deleteFile(file)) {
+                    //改个人容量
+                    User user = (User) req.getSession().getAttribute("user");
+                    user.setStorage(user.getStorage() + file.getSize());
+                    new UserServiceImpl().updateUser(user);
+                }else{
+                    try {
+                        resp.sendError(500,"删除失败");
+                    }catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }else{
-            service.deleteFolder(path + "/" + filename);
+        }else{//文件夹
+            int size = service.deleteFolder(path + "/" + filename);
+            //改个人容量
+            User user = (User) req.getSession().getAttribute("user");
+            user.setStorage(user.getStorage() + size);
+            new UserServiceImpl().updateUser(user);
         }
 
     }
@@ -210,6 +225,22 @@ public class MyServlet extends BaseServlet{
             }
         }catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void getDefaultStorage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("utf-8");
+        JSONObject jsonobj = new JSONObject();
+        jsonobj.put("STORAGE_VISITOR",User.STORAGE_VISITOR);
+        jsonobj.put("STORAGE_USER",User.STORAGE_USER);
+        jsonobj.put("STORAGE_ADMINISTRATOR",User.STORAGE_ADMINISTRATOR);
+        jsonobj.put("SINGLE_FILE_MAX_SIZE",User.SINGLE_FILE_MAX_SIZE);
+        try(PrintWriter pw = resp.getWriter()){
+            pw.write(jsonobj.toJSONString());
+        }catch(IOException e){
+            e.printStackTrace();
+            resp.sendError(500,"未知错误");
         }
     }
 }

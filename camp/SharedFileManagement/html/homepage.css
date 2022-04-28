@@ -15,15 +15,15 @@
 .navigation button{
     display: block;
 }
+
+.content{
+    float:left;
+}
 #type{
     padding-right: 30px;
 }
 #type button{
     display: block;
-}
-
-.content{
-    float:left;
 }
 .upload {
     padding: 1px 1px;

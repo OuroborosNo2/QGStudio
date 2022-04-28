@@ -28,7 +28,9 @@ public interface FileDao {
      * */
     int saveFile(InputStream in, FileOutputStream out);
 
-    boolean deleteFileOnDisk(String path);
+    int deleteFileOnDisk(String path);
+
+    int deleteChildrenFile(String path);
 
     boolean renameFileOnDisk(String path, String newname);
 

@@ -47,5 +47,7 @@ public interface UserService{
      * */
     boolean setHeadimg();
 
+    boolean updateUser(User user);
+
     JSONObject getUserJSON(User user);
 }

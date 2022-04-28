@@ -25,6 +25,7 @@ public class User {
     public static int STORAGE_VISITOR;
     public static int STORAGE_USER;
     public static int STORAGE_ADMINISTRATOR;
+    public static int SINGLE_FILE_MAX_SIZE;
 
     static{
         try(InputStream input = new FileInputStream("../webapps/SFM/WEB-INF/classes/com/ouroboros/qgstudio/config/default_storage.properties")) {
@@ -33,6 +34,7 @@ public class User {
             STORAGE_VISITOR = Integer.parseInt(prop.getProperty("visitor"));
             STORAGE_USER = Integer.parseInt(prop.getProperty("user"));
             STORAGE_ADMINISTRATOR = Integer.parseInt(prop.getProperty("administrator"));
+            SINGLE_FILE_MAX_SIZE = Integer.parseInt(prop.getProperty("singleFileMaxSize"));
         }catch(Exception e){
             e.printStackTrace();
         }
