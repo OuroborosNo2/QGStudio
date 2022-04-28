@@ -30,7 +30,7 @@ public class FileDaoImpl implements FileDao {
         List<Object> rs = crud.query(this.conn,"directory = ? AND filename = ?",list);
         ds.releaseConnection(this.conn);
         if(!rs.isEmpty()){
-            return new File((String)rs.get(0), (String)rs.get(1), (int)rs.get(2), (Timestamp) rs.get(3), (String)rs.get(4), (int)rs.get(5));
+            return new File((int)rs.get(0),(String)rs.get(1), (String)rs.get(2), (int)rs.get(3), (Timestamp) rs.get(4), (String)rs.get(5), (int)rs.get(6));
         }else{
             return null;
         }
@@ -62,10 +62,9 @@ public class FileDaoImpl implements FileDao {
         this.conn = ds.getConnection();
 
         List<Object> list = new ArrayList<>();
-        list.add(file.getDirectory());
-        list.add(file.getFilename());
+        list.add(file.getId());
         CRUDUtils crud = new FileCRUD();
-        int result = crud.delete(this.conn,"directory = ? AND filename = ?",list);
+        int result = crud.delete(this.conn,"id = ?",list);
 
         ds.releaseConnection(this.conn);
         return result != -1;//result==-1 ? false : true的简化
@@ -84,10 +83,9 @@ public class FileDaoImpl implements FileDao {
         list.add(file.getGet_code());
         list.add(file.getSize());
         //range里的占位符
-        list.add(file.getDirectory());
-        list.add(file.getFilename());
+        list.add(file.getId());
         CRUDUtils crud = new FileCRUD();
-        int result = crud.update(this.conn,"filename = ?, directory = ?, times = ?, deadline = ?, get_code = ?, size = ?","directory = ? AND filename = ?",list);
+        int result = crud.update(this.conn,"filename = ?, directory = ?, times = ?, deadline = ?, get_code = ?, size = ?","id = ?",list);
 
         ds.releaseConnection(this.conn);
         return result != -1;//result==-1 ? false : true的简化

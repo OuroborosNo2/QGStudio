@@ -61,7 +61,7 @@ public class FileServiceImpl implements FileService {
             //录入相应的文件信息
             Timestamp deadline = null;
             //deadLine = Timestamp.valueOf("9999-12-31 00:00:00");//null可以存入数据库，不需要额外定特殊值
-            dao.insertFile(new com.ouroboros.qgstudio.po.File(fileName,path,-1,deadline,null,size));
+            dao.insertFile(new com.ouroboros.qgstudio.po.File(0,fileName,path,-1,deadline,null,size));
             //更新用户个人空间
             user.setStorage(user.getStorage()-size);
             new UserDaoImpl().updateUser(user);

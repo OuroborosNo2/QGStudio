@@ -3,6 +3,7 @@ package com.ouroboros.qgstudio.po;
 import java.sql.Timestamp;
 
 public class File {
+    private int id;
     private String filename;
     private String directory;
     private int times;//不限：-1
@@ -10,7 +11,8 @@ public class File {
     private String get_code;//不限：null
     private int size;//int 最大为2g左右，够用了，不需要long，但要限制单个文件最大值
 
-    public File(String filename, String directory, int times, Timestamp deadline, String get_code, int size) {
+    public File(int id,String filename, String directory, int times, Timestamp deadline, String get_code, int size) {
+        this.id = id;
         this.filename = filename;
         this.directory = directory;
         this.times = times;
@@ -67,5 +69,11 @@ public class File {
         this.size = size;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }
