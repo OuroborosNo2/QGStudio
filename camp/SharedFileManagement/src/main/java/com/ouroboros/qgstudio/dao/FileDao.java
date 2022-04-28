@@ -27,8 +27,8 @@ public interface FileDao {
      * @return 写入的文件大小
      * */
     int saveFile(InputStream in, FileOutputStream out);
-    /** 在磁盘上删除file对应的文件
-     * @param file 是po的File 不是io的
-     * */
-    boolean deleteFileOnDisk(File file);
+
+    boolean deleteFileOnDisk(String path);
+
+    boolean newFolder(String path);
 }

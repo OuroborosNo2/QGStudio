@@ -1,0 +1,66 @@
+.navigation{
+    float:left;
+    padding-right: 30px;
+}
+#headImg{
+    width: 50px;
+    height: 50px;
+    padding-right: 0;
+}
+#nickname{
+    display: inline;
+    font-size: 20px;
+    padding-left: 0;
+}
+.navigation button{
+    display: block;
+}
+#type{
+    padding-right: 30px;
+}
+#type button{
+    display: block;
+}
+
+.content{
+    float:left;
+}
+.upload {
+    padding: 1px 1px;
+    height: 20px;
+    position: relative;
+}
+
+#div_directory_back{
+    margin-right: 10px;
+}
+#file{
+    position: absolute;
+    overflow: hidden;
+    width: 50px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+.icon_file {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-image: url("img/icon_file.png");
+    background-size: 25px 25px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.icon_folder {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-image: url("img/icon_folder.png");
+    background-size: 25px 25px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+#newFolder{
+    width: 30px;
+    height: 30px;
+}

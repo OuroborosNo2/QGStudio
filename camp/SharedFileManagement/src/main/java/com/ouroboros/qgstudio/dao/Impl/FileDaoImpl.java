@@ -114,8 +114,7 @@ public class FileDaoImpl implements FileDao {
     }
 
     @Override
-    public boolean deleteFileOnDisk(File file) {
-        String path = "../webapps/files/" + file.getDirectory() + "/" + file.getFilename();
+    public boolean deleteFileOnDisk(String path) {
         java.io.File f = new java.io.File(path);
         if(f.exists()){//存在文件，执行删除
             return f.delete();
@@ -123,5 +122,16 @@ public class FileDaoImpl implements FileDao {
             return false;
         }
     }
+
+    @Override
+    public boolean newFolder(String path) {
+        java.io.File f = new java.io.File(path);
+        if(f.exists()){
+            return false;
+        }else{
+            return f.mkdir();//要求上级文件夹存在
+        }
+    }
+
 
 }
