@@ -1,5 +1,7 @@
 package com.ouroboros.qgstudio.controller;
 
+import com.ouroboros.qgstudio.dao.FileDao;
+import com.ouroboros.qgstudio.dao.UserDao;
 import com.ouroboros.qgstudio.service.impl.UserServiceImpl;
 
 import javax.servlet.ServletContextEvent;
@@ -15,6 +17,8 @@ public class AppListener implements ServletContextListener {
 
     // 在此清理WebApp
     public void contextDestroyed(ServletContextEvent sce) {
+        UserDao.ds.destroyDataSource();
+        FileDao.ds.destroyDataSource();
         System.out.println("WebApp destroyed.");
     }
 }
