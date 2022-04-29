@@ -112,20 +112,46 @@ function uploadFile() {
     d.setAttribute('onchange', 'uploadFile()');
     parent.insertBefore(d, parent.children[0]);
 }
-function deleteFile(){
-    if(window.file_select === undefined){//未选择文件
-        alert("请选择文件");
+function downloadFile(){
+    let selected = getSelected();
+    if(selected === undefined){
+        return;
+    }else if(selected.fileType === "folder"){
+        alert("暂不处理下载整个文件夹");
         return;
     }
-    //判断是文件夹还是文件
-    let filename;
-    let fileType;
-    if(window.file_select.substring(0,4) === "file"){
-        filename = window.file_select.substring(5);//file_value ,从_后开始截取value
-        fileType = "file";
-    }else{
-        filename = window.file_select.substring(7);//folder_value ,从_后开始截取value
-        fileType = "folder";
+    $.ajax({
+        url: "../SFM/?method=downloadFile",
+        type: 'POST',
+        data:{
+          path: window.path,
+          filename: selected.filename,
+          fileType: selected.fileType
+        },
+        async: true,
+        responseType: 'blob',
+        success: function (data) {
+            //上面responseType blob不起作用
+            const blob = new Blob([data], {type: 'blob'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = selected.filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        },
+        error: function (XMLHttpRequest) {
+            alertError(XMLHttpRequest);
+        }
+    });
+}
+function deleteFile(){
+    let selected = getSelected();
+    if(selected === undefined){
+        return;
     }
     $.ajax({
         url: '../SFM/?method=deleteFile',
@@ -133,8 +159,8 @@ function deleteFile(){
         async: true,
         data:{
             path:window.path,
-            filename:filename,
-            fileType:fileType
+            filename:selected.filename,
+            fileType:selected.fileType
         },
         success: function (result) {
             alert("删除成功");
@@ -148,8 +174,8 @@ function deleteFile(){
     });
 }
 function renameFile(){
-    if(window.file_select === undefined){//未选择文件
-        alert("请选择文件");
+    let selected = getSelected();
+    if(selected === undefined){
         return;
     }
 
@@ -168,26 +194,16 @@ function renameFile(){
     document.addEventListener("mousedown", func, false);
     function func(e){
         if(e.target.id === "div_renamingFile_confirm"){
-            //判断是文件夹还是文件
-            let filename;
             const newname = $("#div_renamingFile_name").val();
-            let fileType;
-            if(window.file_select.substring(0,4) === "file"){
-                filename = window.file_select.substring(5);//file_value ,从_后开始截取value
-                fileType = "file";
-            }else{
-                filename = window.file_select.substring(7);//folder_value ,从_后开始截取value
-                fileType = "folder";
-            }
             $.ajax({
                 url: '../SFM/?method=renameFile',
                 type: 'get',
                 async: true,
                 data:{
                     path:window.path,
-                    filename:filename,
+                    filename:selected.filename,
                     newname:newname,
-                    fileType:fileType
+                    fileType:selected.fileType
                 },
                 success: function () {
                     showFileList();//异步
@@ -260,7 +276,7 @@ function showManu(){
         ' <button type="button" id="share">分享</button>' +
         ' <button type="button" id="delete" onClick="deleteFile()">删除</button>' +
         '<button type="button" id="rename" onClick="renameFile()">重命名</button>' +
-        ' <button type="button" id="download">下载</button>' +
+        ' <button type="button" id="download" onClick="downloadFile()">下载</button>' +
         ' <a type="button" class="upload">' +
             ' <input type="file" id="file" multiple="multiple" onChange="uploadFile()"/>' +
             ' <button type="button">上传</button>' +
@@ -387,6 +403,7 @@ function showFileList(){
         timeout: 10000
     });
 }
+
 function alertError(XMLHttpRequest) {
     let msg = XMLHttpRequest.responseText;
     msg = msg.substring(msg.indexOf("消息"));
@@ -395,4 +412,20 @@ function alertError(XMLHttpRequest) {
     if (msg === "会话失效，请重新登录") {
         window.open("login.html", "_self");
     }
+}
+function getSelected(){
+    if(window.file_select === undefined){//未选择文件
+        alert("请选择文件");
+        return undefined;
+    }//判断是文件夹还是文件
+    let filename;
+    let fileType;
+    if(window.file_select.substring(0,4) === "file"){
+        filename = window.file_select.substring(5);//file_value ,从_后开始截取value
+        fileType = "file";
+    }else{
+        filename = window.file_select.substring(7);//folder_value ,从_后开始截取value
+        fileType = "folder";
+    }
+    return {"filename":filename,"fileType":fileType};
 }

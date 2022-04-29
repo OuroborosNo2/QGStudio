@@ -5,10 +5,7 @@ import com.ouroboros.qgstudio.dao.FileDao;
 import com.ouroboros.qgstudio.po.File;
 import org.apache.commons.fileupload.FileItem;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -199,5 +196,24 @@ public class FileDaoImpl implements FileDao {
         }
     }
 
-
+    @Override
+    public boolean downloadFile(BufferedOutputStream out, String path) {
+        java.io.File f = new java.io.File(path);
+        if(f.exists()) {
+            try(BufferedInputStream in = new BufferedInputStream(new FileInputStream(f))){
+                int len;
+                byte[] b = new byte[1024];
+                while((len = in.read(b)) != -1){
+                    out.write(b,0,len);
+                }
+                out.flush();
+            }catch(IOException e){
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

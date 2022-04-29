@@ -8,6 +8,7 @@ import com.ouroboros.qgstudio.service.UserService;
 import com.ouroboros.qgstudio.service.impl.FileServiceImpl;
 import com.ouroboros.qgstudio.service.impl.UserServiceImpl;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -242,5 +243,34 @@ public class MyServlet extends BaseServlet{
             e.printStackTrace();
             resp.sendError(500,"未知错误");
         }
+    }
+
+    public void downloadFile(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+         resp.setContentType("application/octet-stream");
+         String path = req.getParameter("path");
+         String filename = req.getParameter("filename");
+         String fileType = req.getParameter("fileType");
+         FileService service = new FileServiceImpl();
+
+         resp.setHeader("Content-Disposition","attachment;filename=\"" + filename +"\"");
+
+         try(BufferedOutputStream out = new BufferedOutputStream(resp.getOutputStream())){
+             boolean result;
+            if(fileType.equals("file")){//下载文件
+                com.ouroboros.qgstudio.po.File file = service.getFile(path,filename);
+                if(file == null){
+                    resp.sendError(404,"要下载的文件不存在");
+                }
+                result = service.downloadFile(out,file);
+            }else{//下载文件夹
+                result = service.downloadFolder(out);
+            }
+            if(!result){
+                resp.sendError(500,"下载失败");
+            }
+         }catch(IOException e){
+             e.printStackTrace();
+             resp.sendError(500,"下载失败");
+         }
     }
 }

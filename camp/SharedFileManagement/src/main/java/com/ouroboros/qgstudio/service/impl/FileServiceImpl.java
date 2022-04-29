@@ -9,9 +9,7 @@ import com.ouroboros.qgstudio.service.FileService;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -153,5 +151,16 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean renameFolder(String path, String newname) {
         return dao.renameChildrenFileDirectory(path,path,newname) && dao.renameFileOnDisk("../webapps/files/" + path,newname);
+    }
+
+    @Override
+    public boolean downloadFile(BufferedOutputStream out, com.ouroboros.qgstudio.po.File file) {
+        return dao.downloadFile(out,"../webapps/files/" + file.getDirectory() + "/" + file.getFilename());
+    }
+
+    @Override
+    public boolean downloadFolder(OutputStream out) {
+        //TODO
+        return false;
     }
 }

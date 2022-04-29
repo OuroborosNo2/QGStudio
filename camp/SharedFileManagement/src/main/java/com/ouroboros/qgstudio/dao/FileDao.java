@@ -3,9 +3,7 @@ package com.ouroboros.qgstudio.dao;
 import com.ouroboros.qgstudio.po.File;
 import org.apache.commons.fileupload.FileItem;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 public interface FileDao {
@@ -37,4 +35,6 @@ public interface FileDao {
     boolean renameChildrenFileDirectory(String path, String oldname, String newname);
 
     boolean newFolder(String path);
+
+    boolean downloadFile(BufferedOutputStream out, String path);
 }
