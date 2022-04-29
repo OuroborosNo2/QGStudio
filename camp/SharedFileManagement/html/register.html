@@ -7,13 +7,18 @@
 		"use strict";
 	$(document).ready(function(){
 		$("button#register").click(function(){
-			var username = $('[name=username]').val();
-			var password = $('[name=password]').val();
-			var checkPassword = $('[name=checkPassword]').val();
+			var username = $('#username').val();
+			var password = $('#password').val();
+			var checkPassword = $('#checkPassword').val();
 			var sex = $('[name=sex]')[0].checked ? "male" : "female";
-			var email = $('[name=email]').val();
+			var email = $('#email').val();
 			if(password !== checkPassword){
 				alert("两次输入的密码不相同！");
+				return;
+			}
+			if(usernameReg() && passwordReg() && emailReg()){
+			}else{
+				alert("请输入正确信息");
 				return;
 			}
 			$.ajax({
@@ -41,6 +46,33 @@
 			});
 		});
 	});
+	function usernameReg(){
+		if(!$("#username").val().match(/^[\w]{3,15}$/)){
+			$("#usernameTips").text("只能含有数字、字母、下划线,长度在3~15之间");
+		}else{
+			$("#usernameTips").text("");
+			return true;
+		}
+		return false;
+	}
+	function passwordReg(){
+			if(!$("#password").val().match(/^(?=.*\d)(?=.*[a-zA-z]).{6,20}$/)){
+				$("#passwordTips").text("必须包含字母和数字的组合，可以使用特殊字符，长度在6~20之间");
+			}else{
+				$("#passwordTips").text("");
+				return true;
+			}
+			return false;
+	}
+	function emailReg(){
+		if(!$("#email").val().match(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)){
+			$("#emailTips").text("邮箱地址错误");
+		}else{
+			$("#emailTips").text("");
+			return true;
+		}
+		return false;
+	}
 	</script>
 <table>
 	<tr>
@@ -48,7 +80,7 @@
 			<font color="red">*</font>用户名：	
 		</td>
 		<td>
-			<input type="text" size="23" name="username"><font color="red">用户名不得少于3个字符</font>
+			<input type="text" size="23" id="username" onchange="usernameReg()"><font color="red" id="usernameTips"></font>
 		</td>
 	</tr>
 	<tr>
@@ -56,7 +88,7 @@
 			<font color="red">*</font>密码：	
 		</td>
 		<td>
-			<input type="password" size="23" name="password">
+			<input type="password" size="23" id="password" onchange="passwordReg()"><font color="red" id="passwordTips"></font>
 		</td>
 	</tr>
 	<tr>
@@ -64,7 +96,7 @@
 			<font color="red">*</font>确认密码：	
 		</td>
 		<td>
-			<input type="password" size="23" name="checkPassword">
+			<input type="password" size="23" id="checkPassword">
 		</td>
 	</tr>
 	<tr>
@@ -72,7 +104,7 @@
 			<font color="red">*</font>Email：	
 		</td>
 		<td>
-			<input type="text" size="23" name="email">
+			<input type="text" size="23" id="email" onchange="emailReg()"><font color="red" id="emailTips"></font>
 		</td>
 	</tr>
 	<tr>

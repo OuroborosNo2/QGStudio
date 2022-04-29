@@ -149,6 +149,22 @@ public class User {
     }
 
     @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", sex=" + sex +
+                ", security_question=" + security_question +
+                ", security_answer='" + security_answer + '\'' +
+                ", permission=" + permission +
+                ", storage=" + storage +
+                ", department='" + department + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;

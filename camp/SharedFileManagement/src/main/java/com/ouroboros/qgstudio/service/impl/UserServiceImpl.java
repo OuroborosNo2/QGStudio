@@ -7,6 +7,7 @@ import com.ouroboros.qgstudio.po.User;
 import com.ouroboros.qgstudio.service.UserService;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
 
 public class UserServiceImpl implements UserService {
 
@@ -38,7 +39,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean register(User user) {
-        return dao.insertUser(user);
+        boolean result = dao.insertUser(user);
+        if(result){
+            File f = new File("../webapps/files/"+user.getUsername());
+            f.mkdirs();
+        }
+        return result;
     }
 
     @Override

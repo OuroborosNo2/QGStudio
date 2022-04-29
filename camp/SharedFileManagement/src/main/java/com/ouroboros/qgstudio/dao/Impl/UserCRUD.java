@@ -17,8 +17,7 @@ public class UserCRUD implements CRUDUtils {
             for(int i = 0; i < params.size(); i++) {//不确定sql里有几个占位符，错误留给用户
                 ps.setObject(i + 1, params.get(i));
             }
-            int result = ps.executeUpdate();
-            return result;
+            return ps.executeUpdate();
         }catch(SQLException e) {
             e.printStackTrace();
             return -1;

@@ -25,7 +25,6 @@ public class MyServlet extends BaseServlet{
         String password = req.getParameter("password");
         try {
             if(!service.contain(username)) {
-                System.out.println("用户不存在！");
                 resp.sendError(400, "用户不存在！");
             }else {
                 User user = service.getUser(username);

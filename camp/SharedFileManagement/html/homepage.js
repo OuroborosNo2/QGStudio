@@ -233,9 +233,13 @@ function newFolder() {
 
     //如果点击的不是确定，那就相当于取消
     document.addEventListener("mousedown", func, false);
-    function func(e){
+    function func(e){//e是触发事件的对象
         if(e.target.id === "div_creatingFolder_confirm"){
             const name = $("#div_creatingFolder_name").val();
+            if(name.match(/[\\\/:*?"<>|]/)){
+                alert("文件名不能包含下列字符\n \\ / : * ? \" < > |");
+                return;
+            }
             $.ajax({
                 url: '../SFM?method=newFolder',
                 type: 'get',
@@ -249,7 +253,7 @@ function newFolder() {
                 timeout: 3000
             });
         }else if(e.target.id === "div_creatingFolder_name"){
-            return;//无反应
+            return;//无反应，保持不变
         }
         document.removeEventListener("mousedown",func);
         showFileList();
