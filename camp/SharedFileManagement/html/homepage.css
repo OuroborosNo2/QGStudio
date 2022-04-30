@@ -1,6 +1,5 @@
-.navigation{
+#navigation{
     float:left;
-    padding-right: 30px;
 }
 #headImg{
     width: 50px;
@@ -18,9 +17,7 @@
 
 .content{
     float:left;
-}
-#type{
-    padding-right: 30px;
+    padding-left: 30px;
 }
 #type button{
     display: block;
@@ -29,6 +26,12 @@
     padding: 1px 1px;
     height: 20px;
     position: relative;
+}
+#details{
+    padding-top: 100px;
+}
+#inf_pickup{
+    padding-top: 50px;
 }
 
 #div_directory_back{

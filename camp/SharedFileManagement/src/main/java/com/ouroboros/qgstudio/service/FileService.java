@@ -21,4 +21,8 @@ public interface FileService {
     boolean renameFolder(String path, String newname);
     boolean downloadFile(BufferedOutputStream out, File file);
     boolean downloadFolder(OutputStream out);
+    String createGet_code(File file, int times, int deadlineLength);
+    boolean cancelShare(File file);
+    File getFileByGet_code(String get_code);
+    boolean updateFile(File file);
 }

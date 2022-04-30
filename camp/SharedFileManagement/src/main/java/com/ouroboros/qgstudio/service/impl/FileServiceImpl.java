@@ -10,9 +10,12 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 public class FileServiceImpl implements FileService {
 
@@ -57,7 +60,7 @@ public class FileServiceImpl implements FileService {
             //保存文件
             int size = dao.saveFile(in,out);
             //录入相应的文件信息
-            Timestamp deadline = null;
+            Date deadline = null;
             //deadLine = Timestamp.valueOf("9999-12-31 00:00:00");//null可以存入数据库，不需要额外定特殊值
             dao.insertFile(new com.ouroboros.qgstudio.po.File(0,fileName,path,-1,deadline,null,size));
             //更新用户个人空间
@@ -79,7 +82,7 @@ public class FileServiceImpl implements FileService {
         jsonobj.put("filename", file.getFilename());
         jsonobj.put("directory", file.getDirectory());
         jsonobj.put("times", file.getTimes());
-        jsonobj.put("deadline", file.getDeadline());
+        jsonobj.put("deadline", file.getDeadline() == null ? null : file.getDeadline().toString());
         jsonobj.put("get_code", file.getGet_code());
         jsonobj.put("size", file.getSize());
         return jsonobj;
@@ -162,5 +165,49 @@ public class FileServiceImpl implements FileService {
     public boolean downloadFolder(OutputStream out) {
         //TODO
         return false;
+    }
+
+    @Override
+    public String createGet_code(com.ouroboros.qgstudio.po.File file, int times, int deadlineLength) {
+        //生成随机字符串
+        String str="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random=new Random();
+        StringBuffer sb;
+        do {//生成随机字符串
+            sb = new StringBuffer();
+            for(int i = 0; i < 5; i++) {
+                int number = random.nextInt(36);
+                sb.append(str.charAt(number));
+            }
+        }while(dao.getFileByGet_code(sb.toString()) != null);//直到无重复取件码
+
+        file.setGet_code(sb.toString());
+        file.setTimes(times);
+
+        Timestamp tt = new Timestamp(System.currentTimeMillis());
+        Calendar cc = Calendar.getInstance();
+        cc.setTime(tt);
+        cc.add(Calendar.DAY_OF_MONTH, deadlineLength);//加n天
+        file.setDeadline(new java.sql.Date(cc.getTime().getTime()));
+
+        dao.updateFile(file);
+        return sb.toString();
+    }
+
+    @Override
+    public com.ouroboros.qgstudio.po.File getFileByGet_code(String get_code) {
+        return dao.getFileByGet_code(get_code);
+    }
+
+    public boolean updateFile(com.ouroboros.qgstudio.po.File file){
+        return dao.updateFile(file);
+    }
+
+    @Override
+    public boolean cancelShare(com.ouroboros.qgstudio.po.File file) {
+        file.setGet_code(null);
+        file.setDeadline(null);
+        file.setTimes(-1);
+        return dao.updateFile(file);
     }
 }

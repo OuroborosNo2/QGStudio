@@ -1,10 +1,8 @@
 package com.ouroboros.qgstudio.dao;
 
 import com.ouroboros.qgstudio.po.File;
-import org.apache.commons.fileupload.FileItem;
 
 import java.io.*;
-import java.util.List;
 
 public interface FileDao {
     MyDataSource ds = new MyDataSource();
@@ -37,4 +35,6 @@ public interface FileDao {
     boolean newFolder(String path);
 
     boolean downloadFile(BufferedOutputStream out, String path);
+
+    File getFileByGet_code(String get_code);
 }

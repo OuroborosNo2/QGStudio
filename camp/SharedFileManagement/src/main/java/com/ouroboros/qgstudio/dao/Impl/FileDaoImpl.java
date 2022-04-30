@@ -8,7 +8,6 @@ import org.apache.commons.fileupload.FileItem;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class FileDaoImpl implements FileDao {
         List<Object> rs = crud.query(this.conn,"directory = ? AND filename = ?",list);
         ds.releaseConnection(this.conn);
         if(!rs.isEmpty()){
-            return new File((int)rs.get(0),(String)rs.get(1), (String)rs.get(2), (int)rs.get(3), (Timestamp) rs.get(4), (String)rs.get(5), (int)rs.get(6));
+            return new File((int)rs.get(0),(String)rs.get(1), (String)rs.get(2), (int)rs.get(3), (java.sql.Date) rs.get(4), (String)rs.get(5), (int)rs.get(6));
         }else{
             return null;
         }
@@ -215,5 +214,23 @@ public class FileDaoImpl implements FileDao {
         }else{
             return false;
         }
+    }
+
+    @Override
+    public File getFileByGet_code(String get_code) {
+        this.conn = ds.getConnection();
+
+        List<Object> list = new ArrayList<>();
+        list.add(get_code);
+        CRUDUtils crud = new FileCRUD();
+        List<Object> rs = crud.query(this.conn,"get_code = ?",list);
+        ds.releaseConnection(this.conn);
+
+        if(!rs.isEmpty()){
+            return new File((int)rs.get(0),(String)rs.get(1), (String)rs.get(2), (int)rs.get(3), (java.sql.Date) rs.get(4), (String)rs.get(5), (int)rs.get(6));
+        }else{
+            return null;
+        }
+
     }
 }

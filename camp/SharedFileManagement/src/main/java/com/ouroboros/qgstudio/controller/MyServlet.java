@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.sql.Date;
+import java.util.Locale;
 
 @WebServlet(urlPatterns = "/*")
 public class MyServlet extends BaseServlet{
@@ -125,6 +127,19 @@ public class MyServlet extends BaseServlet{
             out.flush();
             in.close();
             out.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void getFileInf(HttpServletRequest req, HttpServletResponse resp){
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("utf-8");
+        String path = req.getParameter("path");
+        String filename = req.getParameter("filename");
+        FileService service = new FileServiceImpl();
+        try(PrintWriter pw = resp.getWriter()) {
+            pw.write(service.getFileJSON(service.getFile(path, filename)).toJSONString());
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -271,5 +286,65 @@ public class MyServlet extends BaseServlet{
              e.printStackTrace();
              resp.sendError(500,"下载失败");
          }
+    }
+
+    public void createGet_code(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("text/plain");
+        String path = req.getParameter("path");
+        String filename = req.getParameter("filename");
+        int times = Integer.parseInt(req.getParameter("times"));
+        int deadlineLength = Integer.parseInt(req.getParameter("deadlineLength"));
+        FileService service = new FileServiceImpl();
+
+        try(PrintWriter pw = resp.getWriter()){
+            String code = service.createGet_code(service.getFile(path,filename),times,deadlineLength);
+            pw.write(code);
+        }catch(IOException e) {
+            e.printStackTrace();
+            resp.sendError(500,"生成取件码失败");
+        }
+    }
+
+    public void cancelShare(HttpServletRequest req, HttpServletResponse resp){
+        String path = req.getParameter("path");
+        String filename = req.getParameter("filename");
+        FileService service = new FileServiceImpl();
+
+        service.cancelShare(service.getFile(path,filename));
+    }
+
+    public void pickupFile(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/octet-stream");
+        String get_code = req.getParameter("get_code").toUpperCase();
+        FileService service = new FileServiceImpl();
+
+        com.ouroboros.qgstudio.po.File file = service.getFileByGet_code(get_code);
+        if(file == null){
+            resp.sendError(404,"无效取件码");
+            return;
+        }
+
+        if(file.getTimes()<=0 || file.getDeadline().before(new Date(System.currentTimeMillis()))){//取件码次数用尽或到期
+            service.cancelShare(file);
+            resp.sendError(404,"无效取件码");
+            return;
+        }
+
+        resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Content-Disposition","attachment;filename=\"" + file.getFilename() +"\"");
+        try(BufferedOutputStream out = new BufferedOutputStream(resp.getOutputStream())){
+            boolean result;
+            result = service.downloadFile(out,file);
+
+            if(result){
+                file.setTimes(file.getTimes()-1);
+                service.updateFile(file);
+            }else{
+                resp.sendError(500,"下载失败");
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+            resp.sendError(500,"下载失败");
+        }
     }
 }

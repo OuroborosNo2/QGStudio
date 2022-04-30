@@ -66,7 +66,7 @@ public class FileCRUD implements CRUDUtils {
                 ps.setObject(i+1,params.get(i));
             }
 
-            try(ResultSet rs = ps.executeQuery();){
+            try(ResultSet rs = ps.executeQuery()){
                 List<Object> str = new ArrayList<>();
                 while(rs.next()){
                     //(id,filename,directory,times,deadline,get_code,size)
@@ -74,8 +74,8 @@ public class FileCRUD implements CRUDUtils {
                     str.add(rs.getString("filename"));
                     str.add(rs.getString("directory"));
                     str.add(rs.getInt("times"));
-                    str.add(rs.getTimestamp("deadline"));
-                    str.add(rs.getString("get_Code"));
+                    str.add(rs.getDate("deadline"));
+                    str.add(rs.getString("get_code"));
                     str.add(rs.getInt("size"));
                 }
                 return str;

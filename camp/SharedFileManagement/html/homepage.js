@@ -10,8 +10,34 @@ $(document).ready(function () {
     getDefaultStorage();
     getUser();
     $("#navigation button").click(function () {
-        window.navigation_select = this.getAttribute("id");//获取导航选择
-        alert(window.navigation_select);
+        //获取导航选择
+        window.navigation_select = this.getAttribute("id");
+        //重置背景色
+        $(".navigation").css("background-color","#FFFFFF");
+        //设置选中背景色
+        event.srcElement.style.setProperty("background-color","#A9CBE8");
+        switch(window.navigation_select){
+            case "personalSpace":
+                window.path = user.username;
+                personalSpace();
+                break;
+            case "departmentSpace":
+                window.path = "";
+                departmentSpace();
+                break;
+            case "pickup":
+                pickup();
+                break;
+            case "group":
+                group();
+                break;
+            case "friend":
+                friend();
+                break;
+            case "profile":
+                profile();
+                break;
+        }
     });
 });
 
@@ -23,11 +49,10 @@ function getUser() {
         dataType: "json",
         success: function (result) {
             window.user = result;
-            window.path = window.user.username;
 
             $("#nickname").text(window.user.nickname);
-            window.navigation_select = "personalSpace";
-            personalSpace();
+
+            document.getElementById("personalSpace").click();
         },
         error: function (XMLHttpRequest) {
             alertError(XMLHttpRequest);
@@ -54,19 +79,132 @@ function personalSpace(){
     $("#content").empty();
     showType();
     showManu();
-    showDirectory(window.path);
-    showFileList(window.path);
+    showDirectory();
+    showFileList();
 }
-function departmentSpace(){}
-function group(){}
-function friend(){}
-function profile(){}
+function departmentSpace(){
+    personalSpace();
+}
+function pickup(){
+    $("#content").empty();
+    $("<div id='div_pickup'>" +
+        "<input type='text' id='div_pickup_text' placeholder='请输入取件码'>" +
+        "<button type='button' id='div_pickup_button' onclick='pickupFile()'>取件" +
+        "</div>")
+        .appendTo("#content");
+    $("#div_pickup_text").attr("oninput","value=value.replace(/[^\\da-zA-Z]/g,'')");//取件码输入限制
+}
+function group(){$("#content").empty();}
+function friend(){$("#content").empty();}
+function profile(){$("#content").empty();}
 function logout(){
     $.get('../SFM?method=logout');
     window.open('login.html','_self');
 }
 
+function pickupFile(){//取件
+    const get_code = $("#div_pickup_text").val();
+    if(!get_code.match(/^[\da-zA-Z]{5}$/)){
+        alert("取件码长度为5！");
+        return;
+    }
+    $.ajax({
+        url: "../SFM/?method=pickupFile",
+        type: 'POST',
+        data:{
+            get_code:get_code
+        },
+        async: true,
+        success: function (data) {
+            //上面responseType blob不起作用
+            const blob = new Blob([data], {type: 'blob'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = "";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        },
+        error: function (XMLHttpRequest) {
+            alertError(XMLHttpRequest);
+        }
+    });
+}
+function createGet_code(){
+    const times = $("#inf_times").val();
+    const deadlineLength = $("[name=deadlineLength]:checked").val();
+    const selected = getSelected();
+    $.ajax({
+        url:"../SFM/?method=createGet_code",
+        type:"post",
+        async:"false",
+        data:{
+            path:window.path,
+            filename:selected.filename,
+            times:times,
+            deadlineLength:deadlineLength
+        },
+        success:function(data){
+            showFileDetails();
+            /*const file = $(document.getElementById(window.file_select));
+            file.eq(1).click();*/
+        },
+        error:function(xhr){
+            alertError(xhr);
+        },
+        timeout:3000
+    });
+}
+function shareFile(){
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+    let selected = getSelected();
+    if(selected === undefined){
+        return;
+    }
+    $("#inf_pickup").empty();
+    $("#inf_pickup").append($("<span>可下载次数：</span><input type='text' id='inf_times'>" +
+        "<br/>" +
+        "<span>有效时间：</span>" +
+        "<span><input type='radio' name='deadlineLength' checked='checked' value='1'>1天</span>" +
+        "<span><input type='radio' name='deadlineLength' value='7'>7天</span>" +
+        "<span><input type='radio' name='deadlineLength' value='30'>30天</span>" +
+        "<br>" +
+        "<button type='button' id='inf_pickup_confirm' onclick='createGet_code()'>确定</button>"));
+    $("#inf_times").attr("oninput","value=value.replace(/[^\\d]/g,'')");//只能输入数字
+
+}
+function cancelShare(){
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+    let selected = getSelected();
+    if(selected === undefined){
+        return;
+    }
+    $.ajax({
+        type:"post",
+        url:"../SFM/?method=cancelShare",
+        data:{
+            path:window.path,
+            filename:selected.filename
+        },
+        success:showFileDetails(),
+        timeout:3000
+    });
+}
 function uploadFile() {
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+
     const maxSize = window.defaultStorage.SINGLE_FILE_MAX_SIZE;
     let totalSize = 0;
     const formData = new FormData();
@@ -149,8 +287,16 @@ function downloadFile(){
     });
 }
 function deleteFile(){
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+
     let selected = getSelected();
     if(selected === undefined){
+        return;
+    }
+    if(!window.confirm("确定删除文件"+(selected.fileType==="file"?"\n":"夹\n")+selected.filename+"?")){
         return;
     }
     $.ajax({
@@ -174,6 +320,11 @@ function deleteFile(){
     });
 }
 function renameFile(){
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+
     let selected = getSelected();
     if(selected === undefined){
         return;
@@ -222,6 +373,11 @@ function renameFile(){
     }
 }
 function newFolder() {
+    if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+        alert("无权限！");
+        return;
+    }
+
     $("<div id='div_creatingFolder'>" +
         "<i class='icon_folder'></i>" +
         "<input type='text' id='div_creatingFolder_name' size='20'>" +
@@ -269,15 +425,19 @@ function showType(){
         '<p id="remainingStorage"></p> ' +
         '</div>')
         .appendTo($("#content"));
+
+    if(window.navigation_select === "departmentSpace"){
+        return;
+    }
+
     $("#remainingStorage").text("剩余空间："+ (window.user.storage/1024/1024).toFixed(2) + "MB/"
         + ((window.defaultStorage.STORAGE_USER)/1024/1024).toFixed(2) + "MB");
 }
 function showManu(){
-    $('<div id="right" class="content"></div>').appendTo($("#content"));
+    $('<div id="middle" class="content"></div>').appendTo($("#content"));
 
     $('<div id="manu">' +
         ' <button type="button" id="sort">按xxx排序</button>' +
-        ' <button type="button" id="share">分享</button>' +
         ' <button type="button" id="delete" onClick="deleteFile()">删除</button>' +
         '<button type="button" id="rename" onClick="renameFile()">重命名</button>' +
         ' <button type="button" id="download" onClick="downloadFile()">下载</button>' +
@@ -289,13 +449,13 @@ function showManu(){
         ' <button type="button" id="multi">多选</button> ' +
         ' <button type="button" id="view">视图</button>' +
         ' </div>')
-        .appendTo($("#right"))
+        .appendTo($("#middle"))
 }
 function showDirectory(){
     let div_directory = $('<div id="div_directory"></div>');
     //没有就appendTo   有就replaceWith
     if(typeof($("#div_directory").html()) === "undefined"){
-        div_directory.appendTo($("#right"));
+        div_directory.appendTo($("#middle"));
     }else{
         $("#div_directory").replaceWith(div_directory);
     }
@@ -341,10 +501,11 @@ function showDirectory(){
     });
 }
 function showFileList(){
+    $("#details").remove();
     let div_list = $('<div id="div_list"></div>');
     //没有就appendTo   有就replaceWith
     if(typeof($("#div_list").html()) === "undefined"){
-        div_list.appendTo($("#right"));
+        div_list.appendTo($("#middle"));
     }else{
         $("#div_list").replaceWith(div_list);
     }
@@ -395,10 +556,10 @@ function showFileList(){
                 //获取文件选择
                 window.file_select = event.srcElement.getAttribute("id");
                 //重置文件背景色
-                $(".list_file , .list_folder").css("background-color","#FFFFFF");
+                $(".list_file , .list_folder").css("background-color","#ffffff");
                 //设置选中文件背景色
                 event.srcElement.parentElement.style.setProperty("background-color","#A9CBE8");
-
+                showFileDetails();
             });
         },
         error: function (XMLHttpRequest) {
@@ -406,6 +567,40 @@ function showFileList(){
         },
         timeout: 10000
     });
+}
+function showFileDetails(){
+    $("#details").remove();
+    const selected = getSelected();
+    if(selected.fileType === "file"){
+        $("<div class='content' id='details'>文件详情" +
+            "<div>文件名：<span id='inf_filename'>*</span></div>" +
+            "<div>文件所在目录：<span id='inf_path'>*</span></div>" +
+            "<div>文件大小：<span id='inf_size'>*</span></div>" +
+            "<div id='inf_pickup'><button type='button' id='share' onClick='shareFile()'>分享</button></div>" +
+            "</div>")
+            .appendTo($("#content"));
+        $.getJSON("../SFM/?method=getFileInf",{path:window.path,filename:selected.filename}).success(function(result){
+            $("#inf_filename").text(result.filename);
+            $("#inf_path").text(result.directory);
+            $("#inf_size").text((result.size/1024/1024).toFixed(3)+"MB("+result.size+")");
+
+            if(result.get_code !== undefined){//有取件码
+                if(window.navigation_select === "departmentSpace" && user.permission !== "administration"){
+                    return;
+                }//部门空间中不显示取件码
+                $("#inf_pickup").empty();
+                $("#inf_pickup").append($("<div>取件码：<span id='inf_get_code'>*</span></div>" +
+                    "<div>可下载次数：<span id='inf_times'>*</span></div>" +
+                    "<div>截止日期：<span id='inf_deadline'>*</span></div>" +
+                    "<br>"));
+                $("#inf_pickup").append($("<button type='button' id='cancelShare' onClick='cancelShare()'>取消分享</button>"));
+
+                $("#inf_get_code").text(result.get_code);
+                $("#inf_times").text(result.times);
+                $("#inf_deadline").text(result.deadline);
+            }
+        });
+    }
 }
 
 function alertError(XMLHttpRequest) {
