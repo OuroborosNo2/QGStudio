@@ -314,7 +314,7 @@ public class MyServlet extends BaseServlet{
     }
 
     public void pickupFile(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/octet-stream");
+        resp.setContentType("application/json");
         String get_code = req.getParameter("get_code").toUpperCase();
         FileService service = new FileServiceImpl();
 
@@ -330,7 +330,14 @@ public class MyServlet extends BaseServlet{
             return;
         }
 
-        resp.setCharacterEncoding("UTF-8");
+        try(PrintWriter pw = resp.getWriter()) {
+            pw.write(service.getFileJSON(service.getFile(file.getDirectory(), file.getFilename())).toJSONString());
+            file.setTimes(file.getTimes()-1);
+            service.updateFile(file);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        /*resp.setCharacterEncoding("UTF-8");
         resp.setHeader("Content-Disposition","attachment;filename=\"" + file.getFilename() +"\"");
         try(BufferedOutputStream out = new BufferedOutputStream(resp.getOutputStream())){
             boolean result;
@@ -345,6 +352,6 @@ public class MyServlet extends BaseServlet{
         }catch(IOException e){
             e.printStackTrace();
             resp.sendError(500,"下载失败");
-        }
+        }*/
     }
 }

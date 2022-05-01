@@ -115,18 +115,34 @@ function pickupFile(){//取件
             get_code:get_code
         },
         async: true,
-        success: function (data) {
-            //上面responseType blob不起作用
-            const blob = new Blob([data], {type: 'blob'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = "";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        success: function (result) {
+            $.ajax({
+                url: "../SFM/?method=downloadFile",
+                type: 'POST',
+                data:{
+                    path: result.directory,
+                    filename: result.filename,
+                    fileType: "file"
+                },
+                async: false,
+                responseType: 'blob',
+                success: function (data) {
+                    //上面responseType blob不起作用
+                    const blob = new Blob([data], {type: 'blob'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = result.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                },
+                error: function (XMLHttpRequest) {
+                    alertError(XMLHttpRequest);
+                }
+            });
         },
         error: function (XMLHttpRequest) {
             alertError(XMLHttpRequest);
